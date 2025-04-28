@@ -1,54 +1,73 @@
-# React + TypeScript + Vite
+# Natsume Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Vite-powered React + TypeScript frontend for Natsume, a service within the Alcaris Network.**
 
-Currently, two official plugins are available:
+Natsume Frontend provides a fast, modern UI for managing item definitions, player data, and economy settings exposed by the Natsume Backend API.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
 
-## Expanding the ESLint configuration
+- ⚡ **Instant Dev HMR** — powered by [Vite](https://vitejs.dev/)
+- ⚛️ **Modern React 18** with hooks and Suspense
+- 🛠 **TypeScript-first** codebase for type-safe development
+- 🔌 **REST / OpenAPI-ready** API layer for seamless Natsume Backend integration
+- ♻️ **ESLint + Prettier** pre-configured for consistent style
+- 🧪 **Vitest** & React Testing Library for unit/DOM tests
+- 📦 **Docker-friendly** build for container or Kubernetes deployments
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Technologies
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+| Purpose            | Stack                         |
+| ------------------ | ----------------------------- |
+| Language           | TypeScript 5.x                |
+| UI Library         | React 18                      |
+| Build / Dev Server | Vite 5                        |
+| Linting            | ESLint (typescript-eslint, React rules) |
+| Formatting         | Prettier                      |
+| Testing            | Vitest, React Testing Library |
+| HTTP Client        | Axios / Fetch API             |
+| State / Caching    | React Query (@tanstack/query) |
+| Styling (optional) | Tailwind CSS / MUI / Chakra UI |
+
+## Getting Started
+
+```bash
+# 1. Install dependencies
+pnpm install          # or yarn / npm
+
+# 2. Start dev server with HMR
+pnpm dev              # http://localhost:5173
+
+# 3. Build for production
+pnpm build            # outputs `/dist`
+
+# 4. Preview the built app locally
+pnpm preview
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Environment Variables
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+| Variable          | Example value                | Description                                  |
+| ----------------- | ---------------------------- | -------------------------------------------- |
+| `VITE_API_URL`    | `https://api.natsume.local`  | Base URL for Natsume Backend REST endpoints. |
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+Create a `.env` file in the project root:
+
+```bash
+VITE_API_URL=https://api.natsume.local
 ```
+
+## Project Scripts
+
+| Command          | Purpose                                   |
+| ---------------- | ----------------------------------------- |
+| `pnpm dev`       | Start dev server with Hot Module Reload   |
+| `pnpm build`     | Generate production build in `/dist`      |
+| `pnpm preview`   | Serve the production bundle locally       |
+| `pnpm lint`      | Run ESLint                                |
+| `pnpm typecheck` | Run TypeScript compiler for type checks   |
+| `pnpm test`      | Execute unit tests with Vitest            |
+| `pnpm format`    | Format all files with Prettier            |
+
+## License
+
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
