@@ -1,5 +1,5 @@
 import AceEditor from "react-ace";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense, lazy } from "react";
 import { FormData, Tag } from "../types";
 
 import NumberInputWithSpin from "../../../components/form/NumberInput";
@@ -7,13 +7,13 @@ import RulesEditor from "../../../components/form/RulesEditor";
 
 import CategorySelect from "@/features/items/components/form/CategorySelect";
 import LoreInput from "@/features/items/components/form/LoreInput";
-import PriceInputs from "@/features/items/components/form/PriceInputs";
-import TagsInput from "@/features/items/components/form/TagsInput";
+const PriceInputs = lazy(() => import("@/features/items/components/form/PriceInputs"));
+const TagsInput = lazy(() => import("@/features/items/components/form/TagsInput"));
 
 import TextField from "@/components/form/TextField";
-import EffectListEditor from "./form/EffectListEditor";
-import AttributeListEditor from "./form/AttributeListEditor";
-import BuffListEditor from "./form/BuffListEditor";
+const EffectListEditor = lazy(() => import("./form/EffectListEditor"));
+const AttributeListEditor = lazy(() => import("./form/AttributeListEditor"));
+const BuffListEditor = lazy(() => import("./form/BuffListEditor"));
 
 import "ace-builds/src-noconflict/mode-json";
 import "ace-builds/src-noconflict/worker-json";
@@ -205,140 +205,143 @@ export default function ItemForm({
         });
 
     return (
-        <div className="p-6 text-white bg-[#1c1e22] h-full w-full">
-            <div className="flex items-center justify-between pb-4 mb-4 border-b">
-                <h1 className="text-4xl font-bold">アイテム設定 - 新規作成</h1>
-            </div>
+        <Suspense fallback={null}>
 
-            {editorMode === 'visual' ? (
-
-                <div className="space-y-4 px-4 pb-18">
-                    <CategorySelect
-                        value={formData.category}
-                        onChange={(v) => handleChange("category", v)}
-                    />
-
-                    <TextField
-                        label="ID"
-                        value={formData.id}
-                        onChange={(v) => handleChange("id", v)}
-                        onBlur={() => handleChange("id", toSnakeCase(formData.id))}
-                        error={formErrors.id}
-                    />
-
-                    <TextField
-                        label="Name"
-                        value={formData.name}
-                        onChange={(v) => handleChange("name", v)}
-                        error={formErrors.name}
-                    />
-
-                    <LoreInput
-                        value={formData.lore}
-                        onChange={(v) => handleChange("lore", v)}
-                        error={formErrors.lore}
-                    />
-
-                    <NumberInputWithSpin
-                        label="Rarity"
-                        value={formData.rarity}
-                        onChange={(v) => handleChange("rarity", v)}
-                        error={formErrors.rarity}
-                    />
-
-                    <NumberInputWithSpin
-                        label="Max Stack"
-                        value={formData.max_stack}
-                        onChange={(v) => handleChange("max_stack", v)}
-                        error={formErrors.max_stack}
-                    />
-
-                    <NumberInputWithSpin
-                        label="Custom Model Data"
-                        value={formData.custom_model_data}
-                        onChange={(v) => handleChange("custom_model_data", v)}
-                        error={formErrors.custom_model_data}
-                    />
-
-                    <PriceInputs
-                        price={formData.price}
-                        onChange={(p) => handleChange("price", p)}
-                    />
-
-                    <TagsInput
-                        tags={formData.tags}
-                        newTag={newTag}
-                        tagError={tagError}
-                        onNewTagChange={(tag) => setNewTag(tag)}
-                        onAddTag={() => {
-                            const errors = {
-                                label: newTag.label.trim() === "",
-                                color: !/^#([0-9A-Fa-f]{6})$/.test(newTag.color),
-                            };
-
-                            setTagError(errors);
-
-                            if (errors.label || errors.color) {
-                                triggerGlobalShake();
-                                return;
-                            }
-
-                            setFormData({ ...formData, tags: [...formData.tags, newTag] });
-                            setNewTag({ label: "", color: "" });
-                            setTagError({});
-                        }}
-                        onRemoveTag={(index) => setFormData({ ...formData, tags: formData.tags.filter((_, i) => i !== index)})}
-                    />
-
-                    <hr className="my-4 border-gray-600" />
-                    {renderDynamicFields()}
+            <div className="p-6 text-white bg-[#1c1e22] h-full w-full">
+                <div className="flex items-center justify-between pb-4 mb-4 border-b">
+                    <h1 className="text-4xl font-bold">アイテム設定 - 新規作成</h1>
                 </div>
-            ) : (
-                <div className="px-8 pb-28">
-                    <AceEditor
-                        mode="json"
-                        theme="monokai"
-                        name="json-editor"
-                        width="100%"
-                        height="700px"
-                        fontSize={12}
-                        value={rawJson}
-                        onChange={(v) => setRawJson(v)}
-                        editorProps={{ $blockScrolling: Infinity }}
-                        setOptions={{
-                            fontFamily: "monospace",
-                            useWorker: true,
-                            enableBasicAutocompletion: true,
-                            enableSnippets: true,
-                            enableLiveAutocompletion: true,
-                            showPrintMargin: false,
-                        }}
-                    />
-                    {jsonError && (
-                        <div className="text-red-500 bg-red-100 px-3 py-2 rounded border border-red-300 mt-2">
-                            JSONエラー: {jsonError}
-                        </div>
-                    )}
-                </div>
-            )}
 
-            <div className="fixed bottom-2 right-6 flex gap-2 z-50">
-                <button
-                    onClick={() =>
-                        setEditorMode((prev) => (prev === "visual" ? "raw" : "visual"))
-                    }
-                    className="px-4 py-2 rounded text-white transition-colors bg-gray-600 hover:bg-gray-700"
-                >
-                    {editorMode === "visual" ? "Raw Editor" : "Visual Editor"}
-                </button>
-                <button
-                    onClick={handleSubmit}
-                    disabled={false}
-                    className={`px-4 py-2 rounded text-white transition-colors bg-blue-600 hover:bg-blue-700`}
-                >
-                    作成
-                </button>
+                {editorMode === 'visual' ? (
+
+                    <div className="space-y-4 px-4 pb-18">
+                        <CategorySelect
+                            value={formData.category}
+                            onChange={(v) => handleChange("category", v)}
+                        />
+
+                        <TextField
+                            label="ID"
+                            value={formData.id}
+                            onChange={(v) => handleChange("id", v)}
+                            onBlur={() => handleChange("id", toSnakeCase(formData.id))}
+                            error={formErrors.id}
+                        />
+
+                        <TextField
+                            label="Name"
+                            value={formData.name}
+                            onChange={(v) => handleChange("name", v)}
+                            error={formErrors.name}
+                        />
+
+                        <LoreInput
+                            value={formData.lore}
+                            onChange={(v) => handleChange("lore", v)}
+                            error={formErrors.lore}
+                        />
+
+                        <NumberInputWithSpin
+                            label="Rarity"
+                            value={formData.rarity}
+                            onChange={(v) => handleChange("rarity", v)}
+                            error={formErrors.rarity}
+                        />
+
+                        <NumberInputWithSpin
+                            label="Max Stack"
+                            value={formData.max_stack}
+                            onChange={(v) => handleChange("max_stack", v)}
+                            error={formErrors.max_stack}
+                        />
+
+                        <NumberInputWithSpin
+                            label="Custom Model Data"
+                            value={formData.custom_model_data}
+                            onChange={(v) => handleChange("custom_model_data", v)}
+                            error={formErrors.custom_model_data}
+                        />
+
+                        <PriceInputs
+                            price={formData.price}
+                            onChange={(p) => handleChange("price", p)}
+                        />
+
+                        <TagsInput
+                            tags={formData.tags}
+                            newTag={newTag}
+                            tagError={tagError}
+                            onNewTagChange={(tag) => setNewTag(tag)}
+                            onAddTag={() => {
+                                const errors = {
+                                    label: newTag.label.trim() === "",
+                                    color: !/^#([0-9A-Fa-f]{6})$/.test(newTag.color),
+                                };
+
+                                setTagError(errors);
+
+                                if (errors.label || errors.color) {
+                                    triggerGlobalShake();
+                                    return;
+                                }
+
+                                setFormData({ ...formData, tags: [...formData.tags, newTag] });
+                                setNewTag({ label: "", color: "" });
+                                setTagError({});
+                            }}
+                            onRemoveTag={(index) => setFormData({ ...formData, tags: formData.tags.filter((_, i) => i !== index) })}
+                        />
+
+                        <hr className="my-4 border-gray-600" />
+                        {renderDynamicFields()}
+                    </div>
+                ) : (
+                    <div className="px-8 pb-28">
+                        <AceEditor
+                            mode="json"
+                            theme="monokai"
+                            name="json-editor"
+                            width="100%"
+                            height="700px"
+                            fontSize={12}
+                            value={rawJson}
+                            onChange={(v) => setRawJson(v)}
+                            editorProps={{ $blockScrolling: Infinity }}
+                            setOptions={{
+                                fontFamily: "monospace",
+                                useWorker: true,
+                                enableBasicAutocompletion: true,
+                                enableSnippets: true,
+                                enableLiveAutocompletion: true,
+                                showPrintMargin: false,
+                            }}
+                        />
+                        {jsonError && (
+                            <div className="text-red-500 bg-red-100 px-3 py-2 rounded border border-red-300 mt-2">
+                                JSONエラー: {jsonError}
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                <div className="fixed bottom-2 right-6 flex gap-2 z-50">
+                    <button
+                        onClick={() =>
+                            setEditorMode((prev) => (prev === "visual" ? "raw" : "visual"))
+                        }
+                        className="px-4 py-2 rounded text-white transition-colors bg-gray-600 hover:bg-gray-700"
+                    >
+                        {editorMode === "visual" ? "Raw Editor" : "Visual Editor"}
+                    </button>
+                    <button
+                        onClick={handleSubmit}
+                        disabled={false}
+                        className={`px-4 py-2 rounded text-white transition-colors bg-blue-600 hover:bg-blue-700`}
+                    >
+                        作成
+                    </button>
+                </div>
             </div>
-        </div>
+        </Suspense>
     );
 }
