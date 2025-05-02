@@ -42,7 +42,7 @@ export default function RulesEditor({
         console.error("ルールの読み込みに失敗", e);
       }
     }
-  }, []);
+  }, [initialRules]);
 
   useEffect(() => {
     const final = conditions.map((cond) => ({
@@ -51,7 +51,7 @@ export default function RulesEditor({
       correct_for_drops: cond.correct_for_drops,
     }));
     setRulesJson(JSON.stringify({ default: defaultRule, conditions: final }, null, 2));
-  }, [defaultRule, conditions]);
+  }, [defaultRule, conditions, setRulesJson]);
 
   const updateDefault = (field: keyof DefaultRule, value: number) => {
     setDefaultRule((prev) => ({ ...prev, [field]: value }));

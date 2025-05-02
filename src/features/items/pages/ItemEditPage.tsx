@@ -63,7 +63,7 @@ export default function ItemEditPage() {
                 navigate("/items");
             })
             .finally(() => setLoading(false));
-    }, [id]);
+    }, [id, navigate]);
 
     const handleSubmit = async () => {
         if (!formData) return;

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { FaPencilAlt, FaTrash } from "react-icons/fa";
 import ConfirmDeleteModal from "./ItemDeleteModal";
 import { useNavigate } from "react-router-dom";
+import { Tag } from "../types";
 
 function formatLore(lore: string[] | undefined, maxLength = 40): string {
     if (!lore || lore.length === 0) return "";
@@ -9,9 +10,11 @@ function formatLore(lore: string[] | undefined, maxLength = 40): string {
     return first.length > maxLength ? first.slice(0, maxLength) + "..." : first;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function ItemList({ items }: { items: any[] }) {
     const navigate = useNavigate();
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [selectedItem, setSelectedItem] = useState<any>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -47,7 +50,7 @@ export default function ItemList({ items }: { items: any[] }) {
                         <div>{item.name}</div>
                         <div>{formatLore(item.lore)}</div>
                         <div className="flex flex-wrap gap-1">
-                            {item.tags?.map((tag: any, i: number) => {
+                            {item.tags?.map((tag: Tag, i: number) => {
                                 const isLightColor = /^#(?:[fF]{2}|[eE]{2}|[dD]{2})/.test(tag.color);
                                 const textClass = isLightColor ? "text-black" : "text-white";
 
@@ -80,7 +83,7 @@ export default function ItemList({ items }: { items: any[] }) {
                         <div><span className="text-gray-400">Name:</span> {item.name}</div>
                         <div><span className="text-gray-400">Desc:</span> {formatLore(item.lore)}</div>
                         <div className="flex flex-wrap gap-1">
-                            {item.tags?.map((tag: any, i: number) => {
+                            {item.tags?.map((tag: Tag, i: number) => {
                                 const isLightColor = /^#(?:[fF]{2}|[eE]{2}|[dD]{2})/.test(tag.color);
                                 const textClass = isLightColor ? "text-black" : "text-white";
                                 

@@ -48,10 +48,12 @@ export default function ItemForm({
     const [rawJson, setRawJson] = useState(() => JSON.stringify(formData, null, 2));
     const [jsonError, setJsonError] = useState<string | null>(null);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleChange = (key: keyof FormData, value: any) => {
         setFormData({ ...formData, [key]: value });
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleDataChange = (key: string, value: any) => {
         setFormData({ ...formData, data: { ...formData.data, [key]: value } });
     };
@@ -75,7 +77,7 @@ export default function ItemForm({
         } catch (e: unknown) {
             if (e instanceof Error) setJsonError(e.message);
         }
-    }, [rawJson]);
+    }, [rawJson, setFormData]);
 
     const formatLabel = (key: string) =>
         key.replace(/_/g, " ").replace(/^\w/, c => c.toUpperCase());
@@ -84,7 +86,7 @@ export default function ItemForm({
         return str
             .trim()
             .replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)
-            .replace(/[\s\-]+/g, '_')
+            .replace(/[\s-]+/g, '_')
             .replace(/[^a-z0-9_]/gi, '')
             .replace(/_{2,}/g, '_')
             .replace(/^_+|_+$/g, '');
@@ -97,6 +99,7 @@ export default function ItemForm({
                     <RulesEditor
                         key={key}
                         initialRules={JSON.stringify(value, null, 2)}
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         setRulesJson={(json: any) => handleDataChange(key, JSON.parse(json))}
                     />
                 );

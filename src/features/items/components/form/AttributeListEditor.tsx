@@ -9,6 +9,7 @@ type Props = {
 };
 
 export default function AttributeListEditor({ initial, onChange }: Props) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const update = (index: number, key: keyof Attribute, val: any) => {
         const updated = [...initial];
         updated[index] = { ...updated[index], [key]: val };

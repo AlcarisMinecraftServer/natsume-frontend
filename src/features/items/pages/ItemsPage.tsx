@@ -13,6 +13,7 @@ const recoveryToastId = "connection-recovered-toast";
 
 export default function ItemsPage() {
     const isFirstLoad = useRef(true);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [items, setItems] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [keyword, setKeyword] = useState("");
@@ -98,6 +99,7 @@ export default function ItemsPage() {
                 item.name.toLowerCase().includes(kw) ||
                 item.category.toLowerCase().includes(kw)) &&
             (selectedCategory === "" || item.category === selectedCategory) &&
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (selectedTags.length === 0 || selectedTags.every(tag => item.tags?.some((t: any) => t.label === tag)))
         );
     });

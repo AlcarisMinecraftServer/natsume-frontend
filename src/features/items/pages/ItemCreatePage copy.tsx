@@ -78,10 +78,12 @@ export default function ItemCreatePage() {
         }, 400);
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleChange = (key: keyof FormData, value: any) => {
         setFormData(prev => ({ ...prev, [key]: value }));
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleDataChange = (key: string, value: any) => {
         setFormData(prev => ({ ...prev, data: { ...prev.data, [key]: value } }));
     };
@@ -131,6 +133,7 @@ export default function ItemCreatePage() {
                     <RulesEditor
                         key={key}
                         initialRules={JSON.stringify(value, null, 2)}
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         setRulesJson={(json: any) => handleDataChange(key, JSON.parse(json))}
                     />
                 );

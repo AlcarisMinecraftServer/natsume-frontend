@@ -9,6 +9,7 @@ type Props = {
 };
 
 export default function EffectListEditor({ initial, onChange }: Props) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const update = (index: number, key: keyof Effect, val: any) => {
         const updated = [...initial];
         updated[index] = { ...updated[index], [key]: val };
