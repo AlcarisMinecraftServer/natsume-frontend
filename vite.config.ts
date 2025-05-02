@@ -13,5 +13,14 @@ export default defineConfig({
   },
   optimizeDeps: {
     include: ["ace-builds/src-noconflict/worker-json"]
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+        },
+      },
+    },
   }
 })

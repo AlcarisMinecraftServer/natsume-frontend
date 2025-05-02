@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import { useNavigate } from "react-router-dom";
 import { FormData, Tag } from "../types";
 import { defaultSchemas } from "../schemas";
 
-import ItemForm from "../components/ItemForm";
 import { toast } from "react-toastify";
+
+const ItemForm = lazy(() => import("../components/ItemForm"));
 
 export default function ItemCreatePage() {
     const navigate = useNavigate();
@@ -74,16 +75,18 @@ export default function ItemCreatePage() {
     };
 
     return (
-        <ItemForm
-            formData={formData}
-            setFormData={setFormData}
-            formErrors={formErrors}
-            newTag={newTag}
-            setNewTag={setNewTag}
-            tagError={tagError}
-            setTagError={setTagError}
-            triggerGlobalShake={triggerGlobalShake}
-            handleSubmit={handleSubmit}
-        />
+        <Suspense fallback={<div>読み込み中...</div>}>
+            <ItemForm
+                formData={formData}
+                setFormData={setFormData}
+                formErrors={formErrors}
+                newTag={newTag}
+                setNewTag={setNewTag}
+                tagError={tagError}
+                setTagError={setTagError}
+                triggerGlobalShake={triggerGlobalShake}
+                handleSubmit={handleSubmit}
+            />
+        </Suspense>
     );
 }

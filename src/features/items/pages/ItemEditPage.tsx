@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, lazy, Suspense } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { FormData, Tag } from "../types";
 import { defaultSchemas } from "../schemas";
-import ItemForm from "../components/ItemForm";
+
+const ItemForm = lazy(() => import("../components/ItemForm"));
 
 export default function ItemEditPage() {
     const { id } = useParams();
@@ -108,16 +109,18 @@ export default function ItemEditPage() {
     }
 
     return (
-        <ItemForm
-            formData={formData}
-            setFormData={setFormData}
-            formErrors={formErrors}
-            newTag={newTag}
-            setNewTag={setNewTag}
-            tagError={tagError}
-            setTagError={setTagError}
-            triggerGlobalShake={triggerGlobalShake}
-            handleSubmit={handleSubmit}
-        />
+        <Suspense fallback={<div>読み込み中...</div>}>
+            <ItemForm
+                formData={formData}
+                setFormData={setFormData}
+                formErrors={formErrors}
+                newTag={newTag}
+                setNewTag={setNewTag}
+                tagError={tagError}
+                setTagError={setTagError}
+                triggerGlobalShake={triggerGlobalShake}
+                handleSubmit={handleSubmit}
+            />
+        </Suspense>
     );
 }
