@@ -1,4 +1,4 @@
-name: CI - Lint & Docker Build
+name: Lint
 
 on:
   push:
