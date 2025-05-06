@@ -9,4 +9,4 @@ COPY . .
 RUN yarn build
 
 EXPOSE 4173
-CMD ["yarn", "preview", "--host"]
+CMD ["yarn", "preview", "--host", "0.0.0.0"]
