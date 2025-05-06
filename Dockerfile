@@ -15,9 +15,9 @@ RUN printf '%s\n' \
     '  listen 80;' \
     '  server_name _;' \
     '  root /usr/share/nginx/html;' \
-    '  index index.html;' \
     '' \
     '  location / {' \
+    '    index index.html;' \
     '    try_files $uri $uri/ /index.html;' \
     '  }' \
     '}' \
