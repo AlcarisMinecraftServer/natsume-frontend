@@ -94,7 +94,7 @@ export default function ItemForm({
 
     const renderDynamicFields = () =>
         Object.entries(formData.data).map(([key, value]) => {
-            if (formData.category === "tools" && key === "rules") {
+            if (formData.category === "tool" && key === "rules") {
                 return (
                     <RulesEditor
                         key={key}

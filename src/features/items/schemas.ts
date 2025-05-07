@@ -8,7 +8,7 @@ export const defaultSchemas = {
         attributes: [],
         buffs: []
     },
-    tools: {
+    tool: {
         tool_type: "pickaxe",
         max_damage: 250,
         rules: {},

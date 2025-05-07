@@ -15,7 +15,7 @@ export default function CategorySelect({ value, onChange }: Props) {
                 className="w-full bg-[#2a2d33] text-white px-3 py-2 rounded border border-gray-600"
             >
                 <option value="food">食料</option>
-                <option value="tools">ツール</option>
+                <option value="tool">ツール</option>
                 <option value="material">素材</option>
                 <option value="weapon">武器</option>
             </select>
