@@ -3,7 +3,7 @@ export const defaultSchemas = {
         nutrition: 4,
         saturation: 0.6,
         can_always_eat: false,
-        eat_seconds: 1.6,
+        eat_seconds: 1.8,
         effects: [],
         attributes: [],
         buffs: []

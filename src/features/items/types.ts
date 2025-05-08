@@ -45,7 +45,29 @@ export type Buff = {
     amount: number;
 };
 
+export interface ToolData {
+    tool_type: string;
+    max_damage: number;
+    rules: Rules;
+    upgrades: any[];
+};
+
+export interface Rules {
+    default: DefaultRule;
+    conditions: Condition[];
+}
+
+export interface DefaultRule {
+    speed: number;
+    damage: number;
+};
+
+export interface Condition {
+    blocks: string[];
+    speed: number;
+    correct_for_drops: boolean;
+};
+
 export interface RulesEditorProps {
-    initialRules: string;
-    setRulesJson: (json: string) => void;
+    rawJson: Rules;
 }

@@ -1,22 +1,8 @@
 import { useEffect, useState } from "react";
 import { TbChevronDown, TbChevronUp, TbTrash, TbPlus } from "react-icons/tb";
-import { RulesEditorProps } from "@/features/items/types";
+import { Condition, DefaultRule, Rules, RulesEditorProps } from "@/features/items/types";
 
-type DefaultRule = {
-  speed: number;
-  damage: number;
-};
-
-export type Condition = {
-  blocks: string[];
-  speed: number;
-  correct_for_drops: boolean;
-};
-
-export default function RulesEditor({
-  initialRules,
-  setRulesJson,
-}: RulesEditorProps) {
+export default function RulesEditor({ rawJson }: RulesEditorProps) {
   const [defaultRule, setDefaultRule] = useState<DefaultRule>({
     speed: 1.0,
     damage: 1,
@@ -25,33 +11,24 @@ export default function RulesEditor({
   const [expandedConditions, setExpandedConditions] = useState<boolean[]>([]);
 
   useEffect(() => {
-    if (initialRules?.trim()) {
-      try {
-        const parsed = JSON.parse(initialRules);
-        if (parsed.default) setDefaultRule(parsed.default);
-        if (parsed.conditions) {
-          setConditions(
-            parsed.conditions.map((c: Condition) => ({
-              ...c,
-              blocks: Array.isArray(c.blocks) ? c.blocks : [c.blocks],
-            }))
-          );
-          setExpandedConditions(parsed.conditions.map(() => true));
-        }
-      } catch (e) {
-        console.error("ルールの読み込みに失敗", e);
-      }
-    }
-  }, [initialRules]);
+    try {
+      const parsed = JSON.parse(JSON.stringify(rawJson)) as Rules;
 
-  useEffect(() => {
-    const final = conditions.map((cond) => ({
-      blocks: cond.blocks.length === 1 ? cond.blocks[0] : cond.blocks,
-      speed: cond.speed,
-      correct_for_drops: cond.correct_for_drops,
-    }));
-    setRulesJson(JSON.stringify({ default: defaultRule, conditions: final }, null, 2));
-  }, [defaultRule, conditions, setRulesJson]);
+      if (parsed.default) setDefaultRule(parsed.default);
+      if (parsed.conditions) {
+        setConditions(
+          parsed.conditions.map((c: any) => ({
+            blocks: Array.isArray(c.blocks) ? c.blocks : [c.blocks],
+            speed: Number(c.speed) ?? 0,
+            correct_for_drops: !!c.correct_for_drops,
+          }))
+        );
+        setExpandedConditions(parsed.conditions.map(() => true));
+      }
+    } catch (e) {
+      console.error("ルールの読み込みに失敗", e);
+    }
+  }, [rawJson]);
 
   const updateDefault = (field: keyof DefaultRule, value: number) => {
     setDefaultRule((prev) => ({ ...prev, [field]: value }));
