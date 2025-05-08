@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { FaPencilAlt, FaTrash } from "react-icons/fa";
-import ConfirmDeleteModal from "./ItemDeleteModal";
+import ConfirmDeleteModal from "./modal/ItemDeleteModal";
 import { useNavigate } from "react-router-dom";
 import { Tag } from "../types";
 

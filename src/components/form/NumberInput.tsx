@@ -1,6 +1,6 @@
 import { useRef } from "react";
 
-type NumberInputWithSpinProps = {
+type NumberInputProps = {
     label: string;
     value: number;
     onChange: (value: number) => void;
@@ -8,13 +8,13 @@ type NumberInputWithSpinProps = {
     error?: boolean;
 };
 
-export default function NumberInputWithSpin({
+export default function NumberInput({
     label,
     value,
     onChange,
     step = 1,
     error = false,
-}: NumberInputWithSpinProps) {
+}: NumberInputProps) {
     const inputRef = useRef<HTMLInputElement>(null);
 
     return (

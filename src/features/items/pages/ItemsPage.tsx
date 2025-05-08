@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { FaPlus } from "react-icons/fa";
 
 import ItemSearchBar from "@/features/items/components/ItemSearchBar";
-import ItemFilterModal from "@/features/items/components/ItemFilterModal";
+import ItemFilterModal from "@/features/items/components/modal/ItemFilterModal";
 import ItemList from "@/features/items/components/ItemList";
 import { toast } from "react-toastify";
 

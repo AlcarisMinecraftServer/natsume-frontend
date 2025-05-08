@@ -1,25 +1,83 @@
-import AceEditor from "react-ace";
-import { useEffect, useState, Suspense, lazy } from "react";
-import { FormData, Tag } from "../types";
+import { useEffect, useState, Suspense } from "react";
 
-import NumberInputWithSpin from "../../../components/form/NumberInput";
-import RulesEditor from "../../../components/form/RulesEditor";
-
-import CategorySelect from "@/features/items/components/form/CategorySelect";
-import LoreInput from "@/features/items/components/form/LoreInput";
-const PriceInputs = lazy(() => import("@/features/items/components/form/PriceInputs"));
-const TagsInput = lazy(() => import("@/features/items/components/form/TagsInput"));
-
+import Checkbox from "@/components/form/Checkbox";
 import TextField from "@/components/form/TextField";
-const EffectListEditor = lazy(() => import("./form/EffectListEditor"));
-const AttributeListEditor = lazy(() => import("./form/AttributeListEditor"));
-const BuffListEditor = lazy(() => import("./form/BuffListEditor"));
+import NumberInput from "@/components/form/NumberInput";
 
+import FoodForm from "@/features/items/components/form/FoodForm";
+import ToolForm from "@/features/items/components/form/ToolForm";
+import TagsInput from "@/features/items/components/form/TagsInput";
+
+import { defaultSchemas } from "../schemas";
+import { FormData, Price, Tag } from "../types";
+
+import AceEditor from "react-ace";
 import "ace-builds/src-noconflict/mode-json";
 import "ace-builds/src-noconflict/worker-json";
 import "ace-builds/src-noconflict/snippets/json";
 import "ace-builds/src-noconflict/theme-monokai";
 import "ace-builds/src-noconflict/ext-language_tools";
+
+function CategoryInput({ value, onChange }: { value: FormData["category"]; onChange: (v: FormData["category"]) => void }) {
+    return (
+        <div>
+            <label className="block text-sm mb-1">Category</label>
+            <select
+                value={value}
+                onChange={(e) => onChange(e.target.value as FormData["category"])}
+                className="w-full bg-[#2a2d33] text-white px-3 py-2 rounded border border-gray-600"
+            >
+                <option value="food">食料</option>
+                <option value="tool">ツール</option>
+                <option value="material">素材</option>
+                <option value="weapon">武器</option>
+            </select>
+        </div>
+    );
+}
+
+function LoreInput({ value, onChange, error }: { value: string[]; onChange: (v: string[]) => void; error?: boolean }) {
+    return (
+        <div>
+            <label className="block text-sm mb-1">Lore</label>
+            <textarea
+                value={value.join("\n")}
+                onChange={(e) => onChange(e.target.value.split("\n"))}
+                rows={4}
+                className={`w-full bg-[#2a2d33] text-white px-3 py-2 rounded border ${error ? "border-red-500" : "border-gray-600"
+                    }`}
+            ></textarea>
+        </div>
+    );
+}
+
+function PriceInput({
+    price,
+    onChange,
+}: {
+    price: Price;
+    onChange: (p: Price) => void;
+}) {
+    return (
+        <>
+            <NumberInput
+                label="Buy Price"
+                value={price.buy}
+                onChange={(v) => onChange({ ...price, buy: v })}
+            />
+            <NumberInput
+                label="Sell Price"
+                value={price.sell}
+                onChange={(v) => onChange({ ...price, sell: v })}
+            />
+            <Checkbox
+                label="Can Sell"
+                checked={price.can_sell}
+                onChange={(v) => onChange({ ...price, can_sell: v })}
+            />
+        </>
+    );
+}
 
 type Props = {
     formData: FormData;
@@ -42,182 +100,58 @@ export default function ItemForm({
     tagError,
     setTagError,
     triggerGlobalShake,
-    handleSubmit
+    handleSubmit,
 }: Props) {
     const [editorMode, setEditorMode] = useState<"visual" | "raw">("visual");
     const [rawJson, setRawJson] = useState(() => JSON.stringify(formData, null, 2));
     const [jsonError, setJsonError] = useState<string | null>(null);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleChange = (key: keyof FormData, value: any) => {
         setFormData({ ...formData, [key]: value });
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const handleDataChange = (key: string, value: any) => {
-        setFormData({ ...formData, data: { ...formData.data, [key]: value } });
-    };
-
-    useEffect(() => {
-        if (editorMode === "raw") {
-            setRawJson(JSON.stringify(formData, null, 2));
-        }
-    }, [formData, editorMode]);
-
     useEffect(() => {
         try {
             const parsed = JSON.parse(rawJson);
-
+            console.log(parsed);
             if (typeof parsed === "object" && parsed !== null && "data" in parsed) {
                 setFormData(parsed);
                 setJsonError(null);
             } else {
-                throw new Error("無効な形式")
+                throw new Error("無効な形式");
             }
         } catch (e: unknown) {
             if (e instanceof Error) setJsonError(e.message);
         }
     }, [rawJson, setFormData]);
 
-    const formatLabel = (key: string) =>
-        key.replace(/_/g, " ").replace(/^\w/, c => c.toUpperCase());
-
-    function toSnakeCase(str: string): string {
-        return str
+    const toSnakeCase = (str: string): string =>
+        str
             .trim()
             .replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)
-            .replace(/[\s-]+/g, '_')
-            .replace(/[^a-z0-9_]/gi, '')
-            .replace(/_{2,}/g, '_')
-            .replace(/^_+|_+$/g, '');
-    }
-
-    const renderDynamicFields = () =>
-        Object.entries(formData.data).map(([key, value]) => {
-            if (formData.category === "tools" && key === "rules") {
-                return (
-                    <RulesEditor
-                        key={key}
-                        initialRules={JSON.stringify(value, null, 2)}
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        setRulesJson={(json: any) => handleDataChange(key, JSON.parse(json))}
-                    />
-                );
-            }
-
-            if (key === "tool_type") {
-                const TOOL_TYPE_OPTIONS = ["pickaxe", "axe", "shovel", "hoe", "sword"];
-
-                return (
-                    <div key={key} className="mb-4">
-                        <label className="block text-sm mb-1 text-white">
-                            {formatLabel(key)}
-                        </label>
-                        <select
-                            value={value}
-                            onChange={(e) => handleDataChange(key, e.target.value)}
-                            className="w-full bg-[#2a2d33] text-white px-3 py-2 rounded border border-gray-600"
-                        >
-                            {TOOL_TYPE_OPTIONS.map(opt => (
-                                <option key={opt} value={opt}>
-                                    {opt.charAt(0).toUpperCase() + opt.slice(1)}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                );
-            }
-
-            if (Array.isArray(value)) {
-                if (key === "effects") {
-                    return (
-                        <div key={key} className="mb-4">
-                            <EffectListEditor
-                                initial={value}
-                                onChange={(v) => handleDataChange(key, v)}
-                            />
-                        </div>
-                    );
-                }
-
-                if (key === "attributes") {
-                    return (
-                        <div key={key} className="mb-4">
-                            <AttributeListEditor
-                                initial={value}
-                                onChange={(v) => handleDataChange(key, v)}
-                            />
-                        </div>
-                    );
-                }
-
-                if (key === "buffs") {
-                    return (
-                        <div key={key} className="mb-4">
-                            <BuffListEditor
-                                initial={value}
-                                onChange={(v) => handleDataChange(key, v)}
-                            />
-                        </div>
-                    );
-                }
-            }
-
-            const valueType = typeof value;
-
-            if (valueType === "number") {
-                return (
-                    <NumberInputWithSpin
-                        key={key}
-                        label={formatLabel(key)}
-                        value={value}
-                        onChange={(v) => handleDataChange(key, v)}
-                    />
-                );
-            }
-
-            if (valueType === "boolean") {
-                return (
-                    <label key={key} className="inline-flex items-center gap-2 text-white">
-                        <input
-                            type="checkbox"
-                            checked={value}
-                            onChange={(e) => handleDataChange(key, e.target.checked)}
-                            className="form-checkbox"
-                        />
-                        {formatLabel(key)}
-                    </label>
-                );
-            }
-
-            if (valueType === "string") {
-                return (
-                    <TextField
-                        key={key}
-                        label={formatLabel(key)}
-                        value={value}
-                        onChange={(v) => handleDataChange(key, v)}
-                    />
-                );
-            }
-
-            return null;
-        });
+            .replace(/\s+/g, "_")
+            .replace(/[^a-z0-9_]/gi, "")
+            .replace(/_{2,}/g, "_")
+            .replace(/^_+|_+$/g, "");
 
     return (
         <Suspense fallback={null}>
-
             <div className="p-6 text-white bg-[#1c1e22] h-full w-full">
                 <div className="flex items-center justify-between pb-4 mb-4 border-b">
                     <h1 className="text-4xl font-bold">アイテム設定 - 新規作成</h1>
                 </div>
 
-                {editorMode === 'visual' ? (
-
+                {editorMode === "visual" ? (
                     <div className="space-y-4 px-4 pb-18">
-                        <CategorySelect
+                        <CategoryInput
                             value={formData.category}
-                            onChange={(v) => handleChange("category", v)}
+                            onChange={(v) =>
+                                setFormData({
+                                    ...formData,
+                                    category: v,
+                                    data: defaultSchemas[v],
+                                })
+                            }
                         />
 
                         <TextField
@@ -241,28 +175,28 @@ export default function ItemForm({
                             error={formErrors.lore}
                         />
 
-                        <NumberInputWithSpin
+                        <NumberInput
                             label="Rarity"
                             value={formData.rarity}
                             onChange={(v) => handleChange("rarity", v)}
                             error={formErrors.rarity}
                         />
 
-                        <NumberInputWithSpin
+                        <NumberInput
                             label="Max Stack"
                             value={formData.max_stack}
                             onChange={(v) => handleChange("max_stack", v)}
                             error={formErrors.max_stack}
                         />
 
-                        <NumberInputWithSpin
+                        <NumberInput
                             label="Custom Model Data"
                             value={formData.custom_model_data}
                             onChange={(v) => handleChange("custom_model_data", v)}
                             error={formErrors.custom_model_data}
                         />
 
-                        <PriceInputs
+                        <PriceInput
                             price={formData.price}
                             onChange={(p) => handleChange("price", p)}
                         />
@@ -271,7 +205,7 @@ export default function ItemForm({
                             tags={formData.tags}
                             newTag={newTag}
                             tagError={tagError}
-                            onNewTagChange={(tag) => setNewTag(tag)}
+                            onNewTagChange={setNewTag}
                             onAddTag={() => {
                                 const errors = {
                                     label: newTag.label.trim() === "",
@@ -285,15 +219,37 @@ export default function ItemForm({
                                     return;
                                 }
 
-                                setFormData({ ...formData, tags: [...formData.tags, newTag] });
+                                setFormData({
+                                    ...formData,
+                                    tags: [...formData.tags, newTag],
+                                });
                                 setNewTag({ label: "", color: "" });
                                 setTagError({});
                             }}
-                            onRemoveTag={(index) => setFormData({ ...formData, tags: formData.tags.filter((_, i) => i !== index) })}
+                            onRemoveTag={(index) =>
+                                setFormData({
+                                    ...formData,
+                                    tags: formData.tags.filter((_, i) => i !== index),
+                                })
+                            }
                         />
 
-                        <hr className="my-4 border-gray-600" />
-                        {renderDynamicFields()}
+                        <hr className="my-6 border-gray-600" />
+
+                        {formData.category === "food" && (
+                            <FoodForm
+                                data={formData.data as any}
+                                onChange={(d) => setFormData({ ...formData, data: d })}
+                            />
+                        )}
+
+                        {formData.category === "tool" && (
+                            <ToolForm
+                                data={formData.data as any}
+                                onChange={(d) => setFormData({ ...formData, data: d })}
+                            />
+                        )}
+
                     </div>
                 ) : (
                     <div className="px-8 pb-28">
@@ -335,8 +291,7 @@ export default function ItemForm({
                     </button>
                     <button
                         onClick={handleSubmit}
-                        disabled={false}
-                        className={`px-4 py-2 rounded text-white transition-colors bg-blue-600 hover:bg-blue-700`}
+                        className="px-4 py-2 rounded text-white transition-colors bg-blue-600 hover:bg-blue-700"
                     >
                         作成
                     </button>

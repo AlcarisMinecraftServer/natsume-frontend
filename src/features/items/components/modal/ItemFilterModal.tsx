@@ -19,7 +19,7 @@ export default function ItemFilterModal({
     tagInput: string;
     setTagInput: (v: string) => void;
 }) {
-    const allCategories = ["weapon", "tools", "material", "food"];
+    const allCategories = ["weapon", "tool", "material", "food"];
 
     const handleAddTag = () => {
         if (tagInput && !selectedTags.includes(tagInput)) {
