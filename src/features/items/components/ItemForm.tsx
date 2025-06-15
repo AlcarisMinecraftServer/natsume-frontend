@@ -4,6 +4,7 @@ import Checkbox from "@/components/form/Checkbox";
 import TextField from "@/components/form/TextField";
 import NumberInput from "@/components/form/NumberInput";
 
+import WeaponForm from "@/features/items/components/form/WeaponForm";
 import FoodForm from "@/features/items/components/form/FoodForm";
 import ToolForm from "@/features/items/components/form/ToolForm";
 import TagsInput from "@/features/items/components/form/TagsInput";
@@ -106,6 +107,7 @@ export default function ItemForm({
     const [rawJson, setRawJson] = useState(() => JSON.stringify(formData, null, 2));
     const [jsonError, setJsonError] = useState<string | null>(null);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleChange = (key: keyof FormData, value: any) => {
         setFormData({ ...formData, [key]: value });
     };
@@ -236,8 +238,17 @@ export default function ItemForm({
 
                         <hr className="my-6 border-gray-600" />
 
+                        {formData.category === "weapon" && (
+                            <WeaponForm
+                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                data={formData.data as any}
+                                onChange={(d) => setFormData({ ...formData, data: d })}
+                            />
+                        )}
+
                         {formData.category === "food" && (
                             <FoodForm
+                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                 data={formData.data as any}
                                 onChange={(d) => setFormData({ ...formData, data: d })}
                             />
@@ -245,6 +256,7 @@ export default function ItemForm({
 
                         {formData.category === "tool" && (
                             <ToolForm
+                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                 data={formData.data as any}
                                 onChange={(d) => setFormData({ ...formData, data: d })}
                             />
