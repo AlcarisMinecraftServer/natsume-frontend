@@ -14,7 +14,7 @@ export type Price = {
 export type FormData = {
     id: string;
     name: string;
-    category: SupportedCategory | "material" | "weapon";
+    category: SupportedCategory;
     lore: string[];
     rarity: number;
     max_stack: number;

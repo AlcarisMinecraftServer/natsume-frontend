@@ -1,4 +1,23 @@
 export const defaultSchemas = {
+    weapon: {
+        weapon_type: "sword",
+        required_level: 10,
+        max_modification: 10,
+        durability: 250,
+        base: {
+            attributes: {
+                attack_damage: 25,
+                movement_speed: 10,
+                attack_range: 3,
+                attack_speed: 1.5,
+                experience_bonus: 10,
+                drop_rate_bonus: 5
+            },
+            effects: [],
+            buffs: []
+        },
+        "upgrades": []
+    },
     food: {
         nutrition: 4,
         saturation: 0.6,
@@ -23,7 +42,6 @@ export const defaultSchemas = {
         enchantable: true
     },
     material: {},
-    weapon: {}
 } as const;
 
 export type SupportedCategory = keyof typeof defaultSchemas;

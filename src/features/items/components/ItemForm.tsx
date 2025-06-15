@@ -4,6 +4,7 @@ import Checkbox from "@/components/form/Checkbox";
 import TextField from "@/components/form/TextField";
 import NumberInput from "@/components/form/NumberInput";
 
+import WeaponForm from "@/features/items/components/form/WeaponForm";
 import FoodForm from "@/features/items/components/form/FoodForm";
 import ToolForm from "@/features/items/components/form/ToolForm";
 import TagsInput from "@/features/items/components/form/TagsInput";
@@ -235,6 +236,13 @@ export default function ItemForm({
                         />
 
                         <hr className="my-6 border-gray-600" />
+
+                        {formData.category === "weapon" && (
+                            <WeaponForm
+                                data={formData.data as any}
+                                onChange={(d) => setFormData({ ...formData, data: d })}
+                            />
+                        )}
 
                         {formData.category === "food" && (
                             <FoodForm
