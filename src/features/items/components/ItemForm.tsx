@@ -107,6 +107,7 @@ export default function ItemForm({
     const [rawJson, setRawJson] = useState(() => JSON.stringify(formData, null, 2));
     const [jsonError, setJsonError] = useState<string | null>(null);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleChange = (key: keyof FormData, value: any) => {
         setFormData({ ...formData, [key]: value });
     };
@@ -239,6 +240,7 @@ export default function ItemForm({
 
                         {formData.category === "weapon" && (
                             <WeaponForm
+                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                 data={formData.data as any}
                                 onChange={(d) => setFormData({ ...formData, data: d })}
                             />
@@ -246,6 +248,7 @@ export default function ItemForm({
 
                         {formData.category === "food" && (
                             <FoodForm
+                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                 data={formData.data as any}
                                 onChange={(d) => setFormData({ ...formData, data: d })}
                             />
@@ -253,6 +256,7 @@ export default function ItemForm({
 
                         {formData.category === "tool" && (
                             <ToolForm
+                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                 data={formData.data as any}
                                 onChange={(d) => setFormData({ ...formData, data: d })}
                             />

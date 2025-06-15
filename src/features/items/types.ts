@@ -49,6 +49,7 @@ export interface ToolData {
     tool_type: string;
     max_damage: number;
     rules: Rules;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     upgrades: any[];
 };
 

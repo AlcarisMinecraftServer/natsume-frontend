@@ -17,8 +17,10 @@ export default function RulesEditor({ rawJson }: RulesEditorProps) {
       if (parsed.default) setDefaultRule(parsed.default);
       if (parsed.conditions) {
         setConditions(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           parsed.conditions.map((c: any) => ({
             blocks: Array.isArray(c.blocks) ? c.blocks : [c.blocks],
+            // eslint-disable-next-line no-constant-binary-expression
             speed: Number(c.speed) ?? 0,
             correct_for_drops: !!c.correct_for_drops,
           }))
