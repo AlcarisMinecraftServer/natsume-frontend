@@ -9,7 +9,6 @@ type Props = {
 };
 
 export default function BuffListEditor({ initial, onChange }: Props) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const update = (index: number, key: keyof Buff, val: any) => {
         const updated = [...initial];
         updated[index] = { ...updated[index], [key]: val };

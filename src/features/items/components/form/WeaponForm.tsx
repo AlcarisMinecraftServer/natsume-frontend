@@ -16,7 +16,6 @@ type WeaponData = {
     max_modification: number;
     durability: number;
     base: WeaponBase;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     upgrades: any[];
 };
 
