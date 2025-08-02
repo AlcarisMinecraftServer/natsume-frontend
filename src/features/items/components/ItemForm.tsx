@@ -1,4 +1,5 @@
 import { useEffect, useState, Suspense } from "react";
+import { useNavigate } from "react-router-dom";
 
 import Checkbox from "@/components/form/Checkbox";
 import TextField from "@/components/form/TextField";
@@ -105,12 +106,17 @@ export default function ItemForm({
     triggerGlobalShake,
     handleSubmit,
 }: Props) {
+    const navigate = useNavigate();
     const [editorMode, setEditorMode] = useState<"visual" | "raw">("visual");
     const [rawJson, setRawJson] = useState(() => JSON.stringify(formData, null, 2));
     const [jsonError, setJsonError] = useState<string | null>(null);
 
     const handleChange = (key: keyof FormData, value: any) => {
         setFormData({ ...formData, [key]: value });
+    };
+
+    const handleCancel = () => {
+        navigate(-1);
     };
 
     useEffect(() => {
@@ -145,7 +151,7 @@ export default function ItemForm({
                 </div>
 
                 {editorMode === "visual" ? (
-                    <div className="space-y-4 px-4 pb-18">
+                    <div className="space-y-4 pb-18">
                         <CategoryInput
                             value={formData.category}
                             onChange={(v) =>
@@ -289,6 +295,15 @@ export default function ItemForm({
                         )}
                     </div>
                 )}
+
+                <div className="fixed bottom-2 left-6 flex gap-2 z-50">
+                    <button
+                        onClick={handleCancel}
+                        className="px-4 py-2 rounded text-white transition-colors bg-red-600 hover:bg-red-700"
+                    >
+                        キャンセル
+                    </button>
+                </div>
 
                 <div className="fixed bottom-2 right-6 flex gap-2 z-50">
                     <button
