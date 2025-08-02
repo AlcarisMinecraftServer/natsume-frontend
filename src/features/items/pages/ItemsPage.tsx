@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+
 import { FaPlus } from "react-icons/fa";
+import { toast } from "react-toastify";
 
 import ItemSearchBar from "@/features/items/components/ItemSearchBar";
 import ItemFilterModal from "@/features/items/components/modal/ItemFilterModal";
 import ItemList from "@/features/items/components/ItemList";
-import { toast } from "react-toastify";
+import LoadingSpinner from "@/features/common/LoadingSpinner";
 
 const errorToastId = "connection-error-toast";
 const loadingToastId = "connection-loading-toast";
@@ -104,11 +106,7 @@ export default function ItemsPage() {
     });
 
     if (loading) {
-        return (
-            <div className="flex p-6 items-center justify-center h-full text-gray-400">
-                <div className="w-12 h-12 border-2 border-cyan-700 border-t-transparent rounded-full animate-spin"></div>
-            </div>
-        );
+        return <LoadingSpinner />;
     }
 
     return (
