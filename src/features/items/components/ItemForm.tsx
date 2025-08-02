@@ -22,7 +22,7 @@ import "ace-builds/src-noconflict/ext-language_tools";
 function CategoryInput({ value, onChange }: { value: FormData["category"]; onChange: (v: FormData["category"]) => void }) {
     return (
         <div>
-            <label className="block text-sm mb-1">Category</label>
+            <label className="block text-sm mb-1">Category (カテゴリー)</label>
             <select
                 value={value}
                 onChange={(e) => onChange(e.target.value as FormData["category"])}
@@ -40,7 +40,7 @@ function CategoryInput({ value, onChange }: { value: FormData["category"]; onCha
 function LoreInput({ value, onChange, error }: { value: string[]; onChange: (v: string[]) => void; error?: boolean }) {
     return (
         <div>
-            <label className="block text-sm mb-1">Lore</label>
+            <label className="block text-sm mb-1">Lore (説明文)</label>
             <textarea
                 value={value.join("\n")}
                 onChange={(e) => onChange(e.target.value.split("\n"))}
@@ -62,17 +62,17 @@ function PriceInput({
     return (
         <>
             <NumberInput
-                label="Buy Price"
+                label="Buy Price (購入価格)"
                 value={price.buy}
                 onChange={(v) => onChange({ ...price, buy: v })}
             />
             <NumberInput
-                label="Sell Price"
+                label="Sell Price (売却価格)"
                 value={price.sell}
                 onChange={(v) => onChange({ ...price, sell: v })}
             />
             <Checkbox
-                label="Can Sell"
+                label="Can Sell (売却可能)"
                 checked={price.can_sell}
                 onChange={(v) => onChange({ ...price, can_sell: v })}
             />
@@ -165,7 +165,7 @@ export default function ItemForm({
                         />
 
                         <TextField
-                            label="Name"
+                            label="Name (アイテム名)"
                             value={formData.name}
                             onChange={(v) => handleChange("name", v)}
                             error={formErrors.name}
@@ -178,14 +178,14 @@ export default function ItemForm({
                         />
 
                         <NumberInput
-                            label="Rarity"
+                            label="Rarity (レアリティ)"
                             value={formData.rarity}
                             onChange={(v) => handleChange("rarity", v)}
                             error={formErrors.rarity}
                         />
 
                         <NumberInput
-                            label="Max Stack"
+                            label="Max Stack (最大スタック数)"
                             value={formData.max_stack}
                             onChange={(v) => handleChange("max_stack", v)}
                             error={formErrors.max_stack}

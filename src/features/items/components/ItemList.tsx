@@ -4,11 +4,7 @@ import ConfirmDeleteModal from "./modal/ItemDeleteModal";
 import { useNavigate } from "react-router-dom";
 import { Tag } from "../types";
 
-function formatLore(lore: string[] | undefined, maxLength = 40): string {
-    if (!lore || lore.length === 0) return "";
-    const first = lore[0];
-    return first.length > maxLength ? first.slice(0, maxLength) + "..." : first;
-}
+type SortKey = "id" | "category" | "name" | "version"
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function ItemList({ items }: { items: any[] }) {
@@ -17,6 +13,9 @@ export default function ItemList({ items }: { items: any[] }) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [selectedItem, setSelectedItem] = useState<any>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const [sortKey, setSortKey] = useState<SortKey>("id");
+    const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
     const handleDelete = async (id: string) => {
         await fetch(`${import.meta.env.VITE_API_URL}/items/${id}`, {
@@ -29,17 +28,48 @@ export default function ItemList({ items }: { items: any[] }) {
         location.reload();
     }
 
+    const toggleSort = (key: SortKey) => {
+        if (sortKey === key) {
+            setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"))
+        } else {
+            setSortKey(key);
+            setSortOrder("asc")
+        }
+    }
+
+    const sortedItems = [...items].sort((a, b) => {
+        const aValue = a[sortKey];
+        const bValue = b[sortKey];
+        if (aValue === bValue) return 0;
+
+        const comp = aValue > bValue ? 1 : -1;
+        return sortOrder === "asc" ? comp : -comp
+    })
+
+    const sortIcon = (key: SortKey) => {
+        if (sortKey !== key) return "↕";
+        return sortOrder === "asc" ? "▲" : "▼";
+    }
+
     return (
         <div className="bg-[#151517] border border-gray-700 rounded overflow-hidden text-sm">
             <div className="hidden md:grid grid-cols-5 bg-[#151517] px-4 py-2 font-semibold border-b border-gray-700 text-gray-300">
-                <div>ID</div>
-                <div>Category</div>
-                <div>Name</div>
-                <div>Desc</div>
+                <div className="flex gap-1 cursor-pointer select-none" onClick={() => toggleSort("id")}>
+                    ID <span>{sortIcon("id")}</span>
+                </div>
+                <div className="flex gap-1 cursor-pointer select-none" onClick={() => toggleSort("category")}>
+                    カテゴリー <span>{sortIcon("category")}</span>
+                </div>
+                <div className="flex gap-1 cursor-pointer select-none" onClick={() => toggleSort("name")}>
+                    アイテム名 <span>{sortIcon("name")}</span>
+                </div>
+                <div className="flex gap-1 cursor-pointer select-none" onClick={() => toggleSort("version")}>
+                    更新日 <span>{sortIcon("version")}</span>
+                </div>
                 <div>Tags</div>
             </div>
 
-            {items.map((item, index) => (
+            {sortedItems.map((item, index) => (
                 <div
                     key={item.id}
                     className={`px-4 py-3 ${index !== items.length - 1 ? "border-b border-gray-700" : ""} hover:bg-[#2a2d33]`}
@@ -48,7 +78,7 @@ export default function ItemList({ items }: { items: any[] }) {
                         <div>{item.id}</div>
                         <div>{item.category}</div>
                         <div>{item.name}</div>
-                        <div>{formatLore(item.lore)}</div>
+                        <div>{new Date(item.version * 1000).toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' })}</div>
                         <div className="flex flex-wrap gap-1">
                             {item.tags?.map((tag: Tag, i: number) => {
                                 const isLightColor = /^#(?:[fF]{2}|[eE]{2}|[dD]{2})/.test(tag.color);
@@ -79,14 +109,14 @@ export default function ItemList({ items }: { items: any[] }) {
 
                     <div className="md:hidden space-y-1">
                         <div><span className="text-gray-400">ID:</span> {item.id}</div>
-                        <div><span className="text-gray-400">Category:</span> {item.category}</div>
-                        <div><span className="text-gray-400">Name:</span> {item.name}</div>
-                        <div><span className="text-gray-400">Desc:</span> {formatLore(item.lore)}</div>
+                        <div><span className="text-gray-400">カテゴリー:</span> {item.category}</div>
+                        <div><span className="text-gray-400">アイテム名:</span> {item.name}</div>
+                        <div><span className="text-gray-400">更新日:</span> {new Date(item.version * 1000).toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' })}</div>
                         <div className="flex flex-wrap gap-1">
                             {item.tags?.map((tag: Tag, i: number) => {
                                 const isLightColor = /^#(?:[fF]{2}|[eE]{2}|[dD]{2})/.test(tag.color);
                                 const textClass = isLightColor ? "text-black" : "text-white";
-                                
+
                                 return (
                                     <span key={i} className={`text-xs text-white px-2 py-0.5 rounded ${textClass}`} style={{ backgroundColor: tag.color }}>
                                         {tag.label}

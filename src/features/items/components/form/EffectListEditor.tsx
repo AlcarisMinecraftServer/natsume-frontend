@@ -27,7 +27,7 @@ export default function EffectListEditor({ initial, onChange }: Props) {
     return (
         <div className="bg-[#1f2227] p-4 rounded space-y-4">
             <div className="flex justify-between items-center mb-2">
-                <h3 className="text-lg font-semibold">Effects</h3>
+                <h3 className="text-lg font-semibold">Effects (エフェクト)</h3>
                 <button
                     onClick={addEffect}
                     className="flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white text-sm px-3 py-1 rounded"

@@ -29,22 +29,22 @@ export default function FoodForm({ data, onChange }: Props) {
     return (
         <div className="space-y-6">
             <NumberInput
-                label="Nutrition"
+                label="Nutrition (満腹度)"
                 value={data.nutrition}
                 onChange={(v) => update("nutrition", v)}
             />
             <NumberInput
-                label="Saturation"
+                label="Saturation (隠し満腹度)"
                 value={data.saturation}
                 onChange={(v) => update("saturation", v)}
             />
             <Checkbox
-                label="Can Always Eat"
+                label="Can Always Eat (いつでも食べれるかどうか)"
                 checked={data.can_always_eat}
                 onChange={(v) => update("can_always_eat", v)}
             />
             <NumberInput
-                label="Eat Time (seconds)"
+                label="Eat Time (食べる時間/秒)"
                 value={data.eat_seconds}
                 onChange={(v) => update("eat_seconds", v)}
             />

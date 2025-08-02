@@ -60,7 +60,7 @@ export default function FoodForm({ data, onChange }: Props) {
     return (
         <div className="space-y-6">
             <div>
-                <label className="block text-sm mb-1 text-white">Weapon Type</label>
+                <label className="block text-sm mb-1 text-white">Weapon Type (武器種)</label>
                 <select
                     value={data.weapon_type}
                     onChange={(e) =>
@@ -79,17 +79,17 @@ export default function FoodForm({ data, onChange }: Props) {
                 </select>
             </div>
             <NumberInput
-                label="Required Level"
+                label="Required Level (必要レベル)"
                 value={data.required_level}
                 onChange={(v) => update("required_level", v)}
             />
             <NumberInput
-                label="Max Modification"
+                label="Max Modification (研磨回数上限)"
                 value={data.max_modification}
                 onChange={(v) => update("max_modification", v)}
             />
             <NumberInput
-                label="Durability"
+                label="Durability (耐久値)"
                 value={data.durability}
                 onChange={(v) => update("durability", v)}
             />
@@ -97,32 +97,32 @@ export default function FoodForm({ data, onChange }: Props) {
 
             <div className="grid grid-cols-2 gap-4">
                 <NumberInput
-                    label="Attack Damage"
+                    label="Attack Damage (攻撃力)"
                     value={data.base.attributes.attack_damage}
                     onChange={(v) => updateAttr("attack_damage", v)}
                 />
                 <NumberInput
-                    label="Movement Speed"
+                    label="Movement Speed (移動速度)"
                     value={data.base.attributes.movement_speed}
                     onChange={(v) => updateAttr("movement_speed", v)}
                 />
                 <NumberInput
-                    label="Attack Range"
+                    label="Attack Range (攻撃距離)"
                     value={data.base.attributes.attack_range}
                     onChange={(v) => updateAttr("attack_range", v)}
                 />
                 <NumberInput
-                    label="Attack Speed"
+                    label="Attack Speed (攻撃速度)"
                     value={data.base.attributes.attack_speed}
                     onChange={(v) => updateAttr("attack_speed", v)}
                 />
                 <NumberInput
-                    label="EXP Bonus"
+                    label="EXP Bonus (EXP ボーナス)"
                     value={data.base.attributes.experience_bonus}
                     onChange={(v) => updateAttr("experience_bonus", v)}
                 />
                 <NumberInput
-                    label="Drop Rate Bonus"
+                    label="Drop Rate Bonus (ドロップ率ボーナス)"
                     value={data.base.attributes.drop_rate_bonus}
                     onChange={(v) => updateAttr("drop_rate_bonus", v)}
                 />

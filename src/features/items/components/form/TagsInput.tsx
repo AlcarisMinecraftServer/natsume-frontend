@@ -20,7 +20,7 @@ export default function TagsInput({
 }: Props) {
     return (
         <div>
-            <label className="block text-sm mb-1">Tags</label>
+            <label className="block text-sm mb-1">Tags (タグ)</label>
 
             <div className="flex gap-2 mb-2 items-center">
                 <input
