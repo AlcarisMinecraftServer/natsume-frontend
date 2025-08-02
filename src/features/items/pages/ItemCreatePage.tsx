@@ -5,6 +5,8 @@ import { defaultSchemas } from "../schemas";
 
 import { toast } from "react-toastify";
 
+import LoadingSpinner from "@/features/common/LoadingSpinner";
+
 const ItemForm = lazy(() => import("../components/ItemForm"));
 
 export default function ItemCreatePage() {
@@ -75,8 +77,9 @@ export default function ItemCreatePage() {
     };
 
     return (
-        <Suspense fallback={<div>読み込み中...</div>}>
+        <Suspense fallback={<LoadingSpinner />}>
             <ItemForm
+                title="新規作成"
                 formData={formData}
                 setFormData={setFormData}
                 formErrors={formErrors}

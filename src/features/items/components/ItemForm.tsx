@@ -1,4 +1,5 @@
 import { useEffect, useState, Suspense } from "react";
+import { useNavigate } from "react-router-dom";
 
 import Checkbox from "@/components/form/Checkbox";
 import TextField from "@/components/form/TextField";
@@ -22,7 +23,7 @@ import "ace-builds/src-noconflict/ext-language_tools";
 function CategoryInput({ value, onChange }: { value: FormData["category"]; onChange: (v: FormData["category"]) => void }) {
     return (
         <div>
-            <label className="block text-sm mb-1">Category</label>
+            <label className="block text-sm mb-1">Category (カテゴリー)</label>
             <select
                 value={value}
                 onChange={(e) => onChange(e.target.value as FormData["category"])}
@@ -40,7 +41,7 @@ function CategoryInput({ value, onChange }: { value: FormData["category"]; onCha
 function LoreInput({ value, onChange, error }: { value: string[]; onChange: (v: string[]) => void; error?: boolean }) {
     return (
         <div>
-            <label className="block text-sm mb-1">Lore</label>
+            <label className="block text-sm mb-1">Lore (説明文)</label>
             <textarea
                 value={value.join("\n")}
                 onChange={(e) => onChange(e.target.value.split("\n"))}
@@ -62,17 +63,17 @@ function PriceInput({
     return (
         <>
             <NumberInput
-                label="Buy Price"
+                label="Buy Price (購入価格)"
                 value={price.buy}
                 onChange={(v) => onChange({ ...price, buy: v })}
             />
             <NumberInput
-                label="Sell Price"
+                label="Sell Price (売却価格)"
                 value={price.sell}
                 onChange={(v) => onChange({ ...price, sell: v })}
             />
             <Checkbox
-                label="Can Sell"
+                label="Can Sell (売却可能)"
                 checked={price.can_sell}
                 onChange={(v) => onChange({ ...price, can_sell: v })}
             />
@@ -81,6 +82,7 @@ function PriceInput({
 }
 
 type Props = {
+    title: string;
     formData: FormData;
     setFormData: (v: FormData) => void;
     formErrors: Partial<Record<keyof FormData, boolean>>;
@@ -93,6 +95,7 @@ type Props = {
 };
 
 export default function ItemForm({
+    title,
     formData,
     setFormData,
     formErrors,
@@ -103,13 +106,17 @@ export default function ItemForm({
     triggerGlobalShake,
     handleSubmit,
 }: Props) {
+    const navigate = useNavigate();
     const [editorMode, setEditorMode] = useState<"visual" | "raw">("visual");
     const [rawJson, setRawJson] = useState(() => JSON.stringify(formData, null, 2));
     const [jsonError, setJsonError] = useState<string | null>(null);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleChange = (key: keyof FormData, value: any) => {
         setFormData({ ...formData, [key]: value });
+    };
+
+    const handleCancel = () => {
+        navigate(-1);
     };
 
     useEffect(() => {
@@ -140,11 +147,11 @@ export default function ItemForm({
         <Suspense fallback={null}>
             <div className="p-6 text-white bg-[#1c1e22] h-full w-full">
                 <div className="flex items-center justify-between pb-4 mb-4 border-b">
-                    <h1 className="text-4xl font-bold">アイテム設定 - 新規作成</h1>
+                    <h1 className="text-4xl font-bold">アイテム設定 - {title}</h1>
                 </div>
 
                 {editorMode === "visual" ? (
-                    <div className="space-y-4 px-4 pb-18">
+                    <div className="space-y-4 pb-18">
                         <CategoryInput
                             value={formData.category}
                             onChange={(v) =>
@@ -165,7 +172,7 @@ export default function ItemForm({
                         />
 
                         <TextField
-                            label="Name"
+                            label="Name (アイテム名)"
                             value={formData.name}
                             onChange={(v) => handleChange("name", v)}
                             error={formErrors.name}
@@ -178,14 +185,14 @@ export default function ItemForm({
                         />
 
                         <NumberInput
-                            label="Rarity"
+                            label="Rarity (レアリティ)"
                             value={formData.rarity}
                             onChange={(v) => handleChange("rarity", v)}
                             error={formErrors.rarity}
                         />
 
                         <NumberInput
-                            label="Max Stack"
+                            label="Max Stack (最大スタック数)"
                             value={formData.max_stack}
                             onChange={(v) => handleChange("max_stack", v)}
                             error={formErrors.max_stack}
@@ -240,7 +247,6 @@ export default function ItemForm({
 
                         {formData.category === "weapon" && (
                             <WeaponForm
-                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                 data={formData.data as any}
                                 onChange={(d) => setFormData({ ...formData, data: d })}
                             />
@@ -248,7 +254,6 @@ export default function ItemForm({
 
                         {formData.category === "food" && (
                             <FoodForm
-                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                 data={formData.data as any}
                                 onChange={(d) => setFormData({ ...formData, data: d })}
                             />
@@ -256,7 +261,6 @@ export default function ItemForm({
 
                         {formData.category === "tool" && (
                             <ToolForm
-                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                 data={formData.data as any}
                                 onChange={(d) => setFormData({ ...formData, data: d })}
                             />
@@ -291,6 +295,15 @@ export default function ItemForm({
                         )}
                     </div>
                 )}
+
+                <div className="fixed bottom-2 left-6 flex gap-2 z-50">
+                    <button
+                        onClick={handleCancel}
+                        className="px-4 py-2 rounded text-white transition-colors bg-red-600 hover:bg-red-700"
+                    >
+                        キャンセル
+                    </button>
+                </div>
 
                 <div className="fixed bottom-2 right-6 flex gap-2 z-50">
                     <button

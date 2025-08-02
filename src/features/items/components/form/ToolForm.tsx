@@ -11,7 +11,7 @@ export default function ToolForm({ data, onChange }: Props) {
     return (
         <div className="space-y-6">
             <div>
-                <label className="block text-sm mb-1 text-white">Tool Type</label>
+                <label className="block text-sm mb-1 text-white">Tool Type (ツール種)</label>
                 <select
                     value={data.tool_type}
                     onChange={(e) => onChange({ ...data, tool_type: e.target.value })}
@@ -26,7 +26,7 @@ export default function ToolForm({ data, onChange }: Props) {
             </div>
 
             <NumberInput
-                label="Max Damage"
+                label="Max Damage (耐久値)"
                 value={data.max_damage}
                 onChange={(v) => onChange({ ...data, max_damage: v })}
             />

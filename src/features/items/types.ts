@@ -21,7 +21,6 @@ export type FormData = {
     custom_model_data: number;
     price: Price;
     tags: Tag[];
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     data: Record<string, any>;
 };
 
@@ -49,7 +48,6 @@ export interface ToolData {
     tool_type: string;
     max_damage: number;
     rules: Rules;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     upgrades: any[];
 };
 

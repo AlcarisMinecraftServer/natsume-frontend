@@ -9,7 +9,6 @@ type Props = {
 };
 
 export default function BuffListEditor({ initial, onChange }: Props) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const update = (index: number, key: keyof Buff, val: any) => {
         const updated = [...initial];
         updated[index] = { ...updated[index], [key]: val };
@@ -27,7 +26,7 @@ export default function BuffListEditor({ initial, onChange }: Props) {
     return (
         <div className="bg-[#1f2227] p-4 rounded space-y-4">
             <div className="flex justify-between items-center mb-2">
-                <h3 className="text-lg font-semibold">Buffs</h3>
+                <h3 className="text-lg font-semibold">Buffs (バフ)</h3>
                 <button
                     onClick={addBuff}
                     className="flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white text-sm px-3 py-1 rounded"

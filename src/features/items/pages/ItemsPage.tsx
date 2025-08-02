@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+
 import { FaPlus } from "react-icons/fa";
+import { toast } from "react-toastify";
 
 import ItemSearchBar from "@/features/items/components/ItemSearchBar";
 import ItemFilterModal from "@/features/items/components/modal/ItemFilterModal";
 import ItemList from "@/features/items/components/ItemList";
-import { toast } from "react-toastify";
+import LoadingSpinner from "@/features/common/LoadingSpinner";
 
 const errorToastId = "connection-error-toast";
 const loadingToastId = "connection-loading-toast";
@@ -13,7 +15,7 @@ const recoveryToastId = "connection-recovered-toast";
 
 export default function ItemsPage() {
     const isFirstLoad = useRef(true);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const [items, setItems] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [keyword, setKeyword] = useState("");
@@ -99,17 +101,12 @@ export default function ItemsPage() {
                 item.name.toLowerCase().includes(kw) ||
                 item.category.toLowerCase().includes(kw)) &&
             (selectedCategory === "" || item.category === selectedCategory) &&
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (selectedTags.length === 0 || selectedTags.every(tag => item.tags?.some((t: any) => t.label === tag)))
         );
     });
 
     if (loading) {
-        return (
-            <div className="flex p-6 items-center justify-center h-full text-gray-400">
-                <div className="w-12 h-12 border-2 border-cyan-700 border-t-transparent rounded-full animate-spin"></div>
-            </div>
-        );
+        return <LoadingSpinner />;
     }
 
     return (

@@ -1,114 +1,110 @@
 import { useState } from "react";
-import { FaPencilAlt, FaTrash } from "react-icons/fa";
-import ConfirmDeleteModal from "./modal/ItemDeleteModal";
 import { useNavigate } from "react-router-dom";
+import { FaPencilAlt, FaTrash, FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import ConfirmDeleteModal from "./modal/ItemDeleteModal";
 import { Tag } from "../types";
 
-function formatLore(lore: string[] | undefined, maxLength = 40): string {
-    if (!lore || lore.length === 0) return "";
-    const first = lore[0];
-    return first.length > maxLength ? first.slice(0, maxLength) + "..." : first;
-}
+type SortKey = "id" | "category" | "name" | "version";
+const ITEMS_PER_PAGE = 10;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function ItemList({ items }: { items: any[] }) {
     const navigate = useNavigate();
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [selectedItem, setSelectedItem] = useState<any>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [sortKey, setSortKey] = useState<SortKey>("id");
+    const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+    const [currentPage, setCurrentPage] = useState(1);
 
-    const handleDelete = async (id: string) => {
-        await fetch(`${import.meta.env.VITE_API_URL}/items/${id}`, {
-            method: "DELETE",
-            headers: {
-                Authorization: `Bearer ${import.meta.env.VITE_API_KEY}`,
-            }
-        });
+    const toggleSort = (key: SortKey) => {
+        if (sortKey === key) {
+            setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
+        } else {
+            setSortKey(key);
+            setSortOrder("asc");
+        }
+    };
 
-        location.reload();
-    }
+    const sortIcon = (key: SortKey) => {
+        if (sortKey !== key) return "↕";
+        return sortOrder === "asc" ? "▲" : "▼";
+    };
+
+    const sortedItems = [...items].sort((a, b) => {
+        const aValue = a[sortKey];
+        const bValue = b[sortKey];
+        if (aValue === bValue) return 0;
+        const comp = aValue > bValue ? 1 : -1;
+        return sortOrder === "asc" ? comp : -comp;
+    });
+
+    const totalPages = Math.ceil(sortedItems.length / ITEMS_PER_PAGE);
+    const paginatedItems = sortedItems.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
     return (
-        <div className="bg-[#151517] border border-gray-700 rounded overflow-hidden text-sm">
-            <div className="hidden md:grid grid-cols-5 bg-[#151517] px-4 py-2 font-semibold border-b border-gray-700 text-gray-300">
-                <div>ID</div>
-                <div>Category</div>
-                <div>Name</div>
-                <div>Desc</div>
-                <div>Tags</div>
+        <div className="space-y-4 pb-24">
+            <div className="flex flex-wrap gap-3 text-sm text-white">
+                <button onClick={() => toggleSort("id")} className="px-3 py-1 rounded bg-[#1f1f22] hover:bg-[#333] border border-gray-700">
+                    IDで並び替え {sortKey === "id" && sortIcon("id")}
+                </button>
+                <button onClick={() => toggleSort("category")} className="px-3 py-1 rounded bg-[#1f1f22] hover:bg-[#333] border border-gray-700">
+                    カテゴリー {sortKey === "category" && sortIcon("category")}
+                </button>
+                <button onClick={() => toggleSort("name")} className="px-3 py-1 rounded bg-[#1f1f22] hover:bg-[#333] border border-gray-700">
+                    アイテム名 {sortKey === "name" && sortIcon("name")}
+                </button>
+                <button onClick={() => toggleSort("version")} className="px-3 py-1 rounded bg-[#1f1f22] hover:bg-[#333] border border-gray-700">
+                    更新日 {sortKey === "version" && sortIcon("version")}
+                </button>
             </div>
 
-            {items.map((item, index) => (
+            {paginatedItems.map((item) => (
                 <div
                     key={item.id}
-                    className={`px-4 py-3 ${index !== items.length - 1 ? "border-b border-gray-700" : ""} hover:bg-[#2a2d33]`}
+                    className="relative bg-[#1c1e22] border border-gray-700 rounded-lg p-4 shadow-sm hover:shadow-lg transition"
                 >
-                    <div className="hidden md:grid grid-cols-6">
-                        <div>{item.id}</div>
-                        <div>{item.category}</div>
-                        <div>{item.name}</div>
-                        <div>{formatLore(item.lore)}</div>
-                        <div className="flex flex-wrap gap-1">
-                            {item.tags?.map((tag: Tag, i: number) => {
-                                const isLightColor = /^#(?:[fF]{2}|[eE]{2}|[dD]{2})/.test(tag.color);
-                                const textClass = isLightColor ? "text-black" : "text-white";
+                    <div className="absolute top-4 right-4 flex gap-2">
+                        <button
+                            onClick={() => navigate(`/items/edit/${item.id}`)}
+                            className="p-1.5 rounded bg-[#2d2d31] text-white border border-gray-600 hover:bg-[#3a3a40]"
+                            title="編集"
+                        >
+                            <FaPencilAlt size={12} />
+                        </button>
+                        <button
+                            onClick={() => {
+                                setSelectedItem(item);
+                                setIsModalOpen(true);
+                            }}
+                            className="p-1.5 rounded bg-[#2d2d31] text-red-400 border border-gray-600 hover:bg-[#3a3a40]"
+                            title="削除"
+                        >
+                            <FaTrash size={12} />
+                        </button>
+                    </div>
 
-                                return (
-                                    <span key={i} className={`text-xs px-2 py-0.5 rounded ${textClass}`} style={{ backgroundColor: tag.color }}>
-                                        {tag.label}
-                                    </span>
-                                )
-                            })}
-                        </div>
-                        <div className="flex justify-end gap-3">
-                            <button onClick={() => navigate(`/items/edit/${item.id}`)} className="bg-[#28282B] border border-gray-700 rounded p-1 text-white hover:opacity-70">
-                                <FaPencilAlt size={14} />
-                            </button>
-                            <button
-                                onClick={() => {
-                                    setSelectedItem(item);
-                                    setIsModalOpen(true);
-                                }}
-                                className="bg-[#28282B] border border-gray-700 rounded p-1 text-red-400 hover:opacity-70"
-                            >
-                                <FaTrash size={14} />
-                            </button>
+                    <div className="pr-16">
+                        <div className="text-base font-semibold text-white whitespace-nowrap overflow-hidden text-ellipsis">
+                            {item.name} <span className="text-sm text-gray-400">({item.id})</span>
                         </div>
                     </div>
 
-                    <div className="md:hidden space-y-1">
-                        <div><span className="text-gray-400">ID:</span> {item.id}</div>
-                        <div><span className="text-gray-400">Category:</span> {item.category}</div>
-                        <div><span className="text-gray-400">Name:</span> {item.name}</div>
-                        <div><span className="text-gray-400">Desc:</span> {formatLore(item.lore)}</div>
-                        <div className="flex flex-wrap gap-1">
+                    <div className="mt-2 text-sm text-gray-400 space-y-1 leading-relaxed">
+                        <div><span className="font-medium text-gray-300">カテゴリー:</span> {item.category}</div>
+                        <div><span className="font-medium text-gray-300">更新日:</span> {new Date(item.version * 1000).toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' })}</div>
+                        <div className="flex flex-wrap gap-2 pt-1">
                             {item.tags?.map((tag: Tag, i: number) => {
                                 const isLightColor = /^#(?:[fF]{2}|[eE]{2}|[dD]{2})/.test(tag.color);
                                 const textClass = isLightColor ? "text-black" : "text-white";
-                                
                                 return (
-                                    <span key={i} className={`text-xs text-white px-2 py-0.5 rounded ${textClass}`} style={{ backgroundColor: tag.color }}>
+                                    <span
+                                        key={i}
+                                        className={`text-xs px-2 py-0.5 rounded-full font-medium ${textClass}`}
+                                        style={{ backgroundColor: tag.color }}
+                                    >
                                         {tag.label}
                                     </span>
-                                )
+                                );
                             })}
-                        </div>
-                        <div className="flex gap-2 justify-end mt-2">
-                            <button
-                                onClick={() => { console.log('') }}
-                                className="bg-[#28282B] border border-gray-700 rounded p-2 text-white hover:opacity-70">
-                                <FaPencilAlt size={14} />
-                            </button>
-                            <button
-                                onClick={() => {
-                                    setSelectedItem(item);
-                                    setIsModalOpen(true);
-                                }}
-                                className="bg-[#28282B] border border-gray-700 rounded p-2 text-red-400 hover:opacity-70"
-                            >
-                                <FaTrash size={14} />
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -118,15 +114,44 @@ export default function ItemList({ items }: { items: any[] }) {
                 open={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 onConfirm={() => {
-                    if (selectedItem) handleDelete(selectedItem.id);
+                    if (selectedItem) {
+                        fetch(`${import.meta.env.VITE_API_URL}/items/${selectedItem.id}`, {
+                            method: "DELETE",
+                            headers: {
+                                Authorization: `Bearer ${import.meta.env.VITE_API_KEY}`,
+                            }
+                        }).then(() => location.reload());
+                    }
                     setIsModalOpen(false);
                 }}
                 itemName={selectedItem?.name}
                 itemId={selectedItem?.id}
             />
 
+            {totalPages > 1 && (
+                <div className="flex justify-between items-center pt-6 border-t border-gray-700 text-white text-sm px-4">
+                    <button
+                        onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                        disabled={currentPage === 1}
+                        className="flex items-center gap-1 px-4 py-2 rounded border border-gray-600 hover:bg-[#333] disabled:opacity-40"
+                    >
+                        <FaChevronLeft /> 前へ
+                    </button>
+                    <span className="text-sm">
+                        {currentPage} / {totalPages} ページ
+                    </span>
+                    <button
+                        onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                        disabled={currentPage === totalPages}
+                        className="flex items-center gap-1 px-4 py-2 rounded border border-gray-600 hover:bg-[#333] disabled:opacity-40"
+                    >
+                        次へ <FaChevronRight />
+                    </button>
+                </div>
+            )}
+
             {items.length === 0 && (
-                <div className="px-4 py-2 text-gray-500 italic">該当なし</div>
+                <div className="text-center text-gray-500 py-4">該当するアイテムはありません</div>
             )}
         </div>
     );
