@@ -77,6 +77,7 @@ export default function ItemCreatePage() {
     return (
         <Suspense fallback={<div>読み込み中...</div>}>
             <ItemForm
+                title="新規作成"
                 formData={formData}
                 setFormData={setFormData}
                 formErrors={formErrors}

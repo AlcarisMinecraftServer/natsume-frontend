@@ -111,6 +111,7 @@ export default function ItemEditPage() {
     return (
         <Suspense fallback={<div>読み込み中...</div>}>
             <ItemForm
+                title="編集"
                 formData={formData}
                 setFormData={setFormData}
                 formErrors={formErrors}

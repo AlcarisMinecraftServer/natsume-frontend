@@ -81,6 +81,7 @@ function PriceInput({
 }
 
 type Props = {
+    title: string;
     formData: FormData;
     setFormData: (v: FormData) => void;
     formErrors: Partial<Record<keyof FormData, boolean>>;
@@ -93,6 +94,7 @@ type Props = {
 };
 
 export default function ItemForm({
+    title,
     formData,
     setFormData,
     formErrors,
@@ -139,7 +141,7 @@ export default function ItemForm({
         <Suspense fallback={null}>
             <div className="p-6 text-white bg-[#1c1e22] h-full w-full">
                 <div className="flex items-center justify-between pb-4 mb-4 border-b">
-                    <h1 className="text-4xl font-bold">アイテム設定 - 新規作成</h1>
+                    <h1 className="text-4xl font-bold">アイテム設定 - {title}</h1>
                 </div>
 
                 {editorMode === "visual" ? (
