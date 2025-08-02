@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { FaSignOutAlt } from "react-icons/fa";
+import { FaBars, FaSignOutAlt, FaTimes } from "react-icons/fa";
 
 export default function Sidebar() {
     const location = useLocation();
+    const [isOpen, setIsOpen] = useState(false);
 
     const links = [
         { label: "アイテム設定", to: "/items" },
@@ -19,11 +21,34 @@ export default function Sidebar() {
     };
 
     return (
-        <div className="flex h-screen">
+        <>
+            {isOpen && (
+                <div
+                    onClick={() => setIsOpen(false)}
+                    className="fixed inset-0 bg-black/70 backdrop-blur-sm transition-opacity duration-200 md:hidden z-[98]"
+                />
+            )}
+
             <div
-                className="relative w-64 h-screen bg-[#1c1e22] text-[#f2f2fb] border-r border-gray-700 overflow-hidden"
+                className={`
+                    fixed top-0 left-0 h-full w-64 bg-[#1c1e22] text-[#f2f2fb] border-r border-gray-700 transform transition-transform duration-300 ease-in-out
+                    ${isOpen ? "translate-x-0" : "-translate-x-full"} 
+                    md:translate-x-0 md:static md:block z-[99]
+                `}
             >
-                <div className="px-4 py-3 mx-2 text-sm font-semibold text-gray-400 uppercase border-b border-gray-700 tracking-wider">
+                <div className="flex justify-between items-center px-4 py-3 md:hidden border-b border-gray-700">
+                    <div className="text-sm font-semibold text-gray-400 uppercase tracking-wider">
+                        Natsume CMS
+                    </div>
+                    <button
+                        className="text-gray-400 hover:text-white"
+                        onClick={() => setIsOpen(false)}
+                    >
+                        <FaTimes />
+                    </button>
+                </div>
+
+                <div className="hidden md:block px-4 py-3 mx-2 text-sm font-semibold text-gray-400 uppercase border-b border-gray-700 tracking-wider">
                     Natsume CMS
                 </div>
 
@@ -32,6 +57,7 @@ export default function Sidebar() {
                         <Link
                             key={label}
                             to={to}
+                            onClick={() => setIsOpen(false)}
                             className={`block px-4 py-2 rounded transition ${
                                 location.pathname === to
                                     ? "bg-[#1e3a8a] text-white"
@@ -63,6 +89,15 @@ export default function Sidebar() {
                     </button>
                 </div>
             </div>
-        </div >
+
+            {!isOpen && (
+                <button
+                    className="fixed top-4 right-4 z-[999] bg-white/90 text-black shadow-md p-2 rounded-md md:hidden border border-gray-300"
+                    onClick={() => setIsOpen(true)}
+                >
+                    <FaBars />
+                </button>
+            )}
+        </>
     );
 }
