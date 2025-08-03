@@ -6,6 +6,7 @@ import TextField from "@/components/form/TextField";
 import NumberInput from "@/components/form/NumberInput";
 
 import WeaponForm from "@/features/items/components/form/WeaponForm";
+import ArmorForm from "@/features/items/components/form/ArmorForm";
 import FoodForm from "@/features/items/components/form/FoodForm";
 import ToolForm from "@/features/items/components/form/ToolForm";
 import TagsInput from "@/features/common/TagsInput";
@@ -29,10 +30,11 @@ function CategoryInput({ value, onChange }: { value: FormData["category"]; onCha
                 onChange={(e) => onChange(e.target.value as FormData["category"])}
                 className="w-full bg-[#2a2d33] text-white px-3 py-2 rounded border border-gray-600"
             >
-                <option value="food">食料</option>
-                <option value="tool">ツール</option>
-                <option value="material">素材</option>
                 <option value="weapon">武器</option>
+                <option value="tool">ツール</option>
+                <option value="armor">アーマー</option>
+                <option value="food">食料</option>
+                <option value="material">素材</option>
             </select>
         </div>
     );
@@ -247,6 +249,13 @@ export default function ItemForm({
 
                         {formData.category === "weapon" && (
                             <WeaponForm
+                                data={formData.data as any}
+                                onChange={(d) => setFormData({ ...formData, data: d })}
+                            />
+                        )}
+
+                        {formData.category === "armor" && (
+                            <ArmorForm
                                 data={formData.data as any}
                                 onChange={(d) => setFormData({ ...formData, data: d })}
                             />
