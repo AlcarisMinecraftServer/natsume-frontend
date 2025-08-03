@@ -92,7 +92,6 @@ export default function RulesEditor({ rawJson }: RulesEditorProps) {
 
   return (
     <div className="p-4 bg-[#2a2d33] rounded border border-gray-600 text-white space-y-6">
-      {/* Default rule */}
       <div className="space-y-2">
         <h3 className="text-lg font-semibold">デフォルト設定</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -117,7 +116,6 @@ export default function RulesEditor({ rawJson }: RulesEditorProps) {
         </div>
       </div>
 
-      {/* Conditions */}
       <div>
         <h3 className="text-lg font-semibold mb-2">条件</h3>
         {conditions.map((cond, idx) => (
