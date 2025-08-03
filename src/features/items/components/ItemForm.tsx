@@ -8,7 +8,7 @@ import NumberInput from "@/components/form/NumberInput";
 import WeaponForm from "@/features/items/components/form/WeaponForm";
 import FoodForm from "@/features/items/components/form/FoodForm";
 import ToolForm from "@/features/items/components/form/ToolForm";
-import TagsInput from "@/features/items/components/form/TagsInput";
+import TagsInput from "@/features/common/TagsInput";
 
 import { defaultSchemas } from "../schemas";
 import { FormData, Price, Tag } from "../types";

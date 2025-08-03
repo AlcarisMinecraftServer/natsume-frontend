@@ -1,6 +1,6 @@
 import NumberInput from "@/components/form/NumberInput";
-import EffectListEditor from "./EffectListEditor";
-import BuffListEditor from "./BuffListEditor";
+import EffectListEditor from "../../../common/EffectListEditor";
+import BuffListEditor from "../../../common/BuffListEditor";
 
 import { Effect, Buff } from "../../types";
 

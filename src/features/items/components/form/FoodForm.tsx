@@ -1,8 +1,8 @@
 import NumberInput from "@/components/form/NumberInput";
 import Checkbox from "@/components/form/Checkbox";
-import EffectListEditor from "./EffectListEditor";
-import AttributeListEditor from "./AttributeListEditor";
-import BuffListEditor from "./BuffListEditor";
+import EffectListEditor from "../../../common/EffectListEditor";
+import AttributeListEditor from "../../../common/AttributeListEditor";
+import BuffListEditor from "../../../common/BuffListEditor";
 
 import { Effect, Attribute, Buff } from "../../types";
 
