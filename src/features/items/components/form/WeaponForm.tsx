@@ -5,7 +5,7 @@ import BuffListEditor from "../../../common/BuffListEditor";
 import { Effect, Buff } from "../../types";
 
 const WEAPON_TYPES = [
-    "sword",
+    "dagger", "sword", "spear", "staff", "bow"
 ] as const;
 
 type WeaponType = typeof WEAPON_TYPES[number];
@@ -39,7 +39,7 @@ type Props = {
     onChange: (newData: WeaponData) => void;
 };
 
-export default function FoodForm({ data, onChange }: Props) {
+export default function WeaponForm({ data, onChange }: Props) {
     const update = <K extends keyof WeaponData>(key: K, value: WeaponData[K]) => {
         onChange({ ...data, [key]: value });
     };
