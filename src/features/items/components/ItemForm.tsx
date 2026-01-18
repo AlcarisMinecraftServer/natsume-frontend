@@ -1,5 +1,6 @@
 import { useEffect, useState, Suspense } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 import Checkbox from "@/components/form/Checkbox";
 import TextField from "@/components/form/TextField";
@@ -316,16 +317,29 @@ export default function ItemForm({
 
                 <div className="fixed bottom-2 right-6 flex gap-2 z-50">
                     <button
-                        onClick={() =>
-                            setEditorMode((prev) => (prev === "visual" ? "raw" : "visual"))
-                        }
+                        onClick={() => {
+                            if (editorMode === "visual") {
+                                setRawJson(JSON.stringify(formData, null, 2));
+                                setEditorMode("raw");
+                            } else {
+                                if (!jsonError) {
+                                    setEditorMode("visual");
+                                } else {
+                                    toast.error("エラーを修正してください!");
+                                }
+                            }
+                        }}
                         className="px-4 py-2 rounded text-white transition-colors bg-gray-600 hover:bg-gray-700"
                     >
                         {editorMode === "visual" ? "Raw Editor" : "Visual Editor"}
                     </button>
                     <button
                         onClick={handleSubmit}
-                        className="px-4 py-2 rounded text-white transition-colors bg-blue-600 hover:bg-blue-700"
+                        disabled={!!jsonError}
+                        className={`px-4 py-2 rounded text-white transition-colors ${jsonError
+                            ? "bg-gray-400 cursor-not-allowed"
+                            : "bg-blue-600 hover:bg-blue-700"
+                            }`}
                     >
                         作成
                     </button>
