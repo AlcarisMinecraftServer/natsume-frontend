@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
 import { FaCube, FaScroll, FaFolder, FaTicketAlt, FaUserCog, FaSignOutAlt, FaBars, FaTasks, FaPaintBrush } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { useAuth } from '@/features/auth/context/AuthContext';
 
 const NavigationSidebar = () => {
     const navigate = useNavigate();
+    const location = useLocation();
     const { actor, logout } = useAuth();
 
-    const [currentPath, setCurrentPath] = useState('/items');
     const [isExpanded, setIsExpanded] = useState(true);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
@@ -44,7 +44,6 @@ const NavigationSidebar = () => {
     const avatarUrl = actor?.avatar_url || null;
 
     const handleNavClick = (to: string) => {
-        setCurrentPath(to);
         navigate(to);
         if (isMobile) {
             setIsMobileMenuOpen(false);
@@ -150,7 +149,7 @@ const NavigationSidebar = () => {
 
                     <nav className={`flex-1 flex flex-col ${isExpanded || isMobile ? 'px-3' : 'px-2'}`}>
                         {links.map((link) => {
-                            const isActive = currentPath === link.to;
+                            const isActive = location.pathname === link.to || location.pathname.startsWith(`${link.to}/`);
                             const Icon = link.icon;
                             const showLabel = isExpanded || isMobile;
 
