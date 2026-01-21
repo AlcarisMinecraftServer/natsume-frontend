@@ -1,5 +1,3 @@
-import NumberInput from "@/components/form/NumberInput";
-import Checkbox from "@/components/form/Checkbox";
 import EffectListEditor from "../../../common/EffectListEditor";
 import AttributeListEditor from "../../../common/AttributeListEditor";
 import BuffListEditor from "../../../common/BuffListEditor";
@@ -28,26 +26,54 @@ export default function FoodForm({ data, onChange }: Props) {
 
     return (
         <div className="space-y-6">
-            <NumberInput
-                label="Nutrition (満腹度)"
-                value={data.nutrition}
-                onChange={(v) => update("nutrition", v)}
-            />
-            <NumberInput
-                label="Saturation (隠し満腹度)"
-                value={data.saturation}
-                onChange={(v) => update("saturation", v)}
-            />
-            <Checkbox
-                label="Can Always Eat (いつでも食べれるかどうか)"
-                checked={data.can_always_eat}
-                onChange={(v) => update("can_always_eat", v)}
-            />
-            <NumberInput
-                label="Eat Time (食べる時間/秒)"
-                value={data.eat_seconds}
-                onChange={(v) => update("eat_seconds", v)}
-            />
+            <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                    <label className="block text-[11px] font-semibold text-[#6f767a]">満腹度 (Nutrition)</label>
+                    <input
+                        type="number"
+                        value={data.nutrition}
+                        onChange={(e) => update("nutrition", Number(e.target.value))}
+                        className="w-full bg-[#ffffff] text-[#080d12] px-3 py-1.5 rounded border border-[#cad3d8] focus:border-[#24afff] focus:outline-none transition-colors"
+                        onWheel={(e) => e.currentTarget.blur()}
+                    />
+                </div>
+                <div className="space-y-1">
+                    <label className="block text-[11px] font-semibold text-[#6f767a]">隠し満腹度 (Saturation)</label>
+                    <input
+                        type="number"
+                        value={data.saturation}
+                        onChange={(e) => update("saturation", Number(e.target.value))}
+                        className="w-full bg-[#ffffff] text-[#080d12] px-3 py-1.5 rounded border border-[#cad3d8] focus:border-[#24afff] focus:outline-none transition-colors"
+                        onWheel={(e) => e.currentTarget.blur()}
+                    />
+                </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+                <input
+                    type="checkbox"
+                    checked={data.can_always_eat}
+                    onChange={(e) => update("can_always_eat", e.target.checked)}
+                    className="w-4 h-4 rounded border-[#cad3d8] text-[#24afff] focus:ring-[#24afff] focus:ring-offset-0"
+                />
+                <label
+                    className="text-sm font-semibold text-[#080d12] cursor-pointer select-none"
+                    onClick={() => update("can_always_eat", !data.can_always_eat)}
+                >
+                    いつでも食べれる (Can Always Eat)
+                </label>
+            </div>
+
+            <div className="space-y-1">
+                <label className="block text-[11px] font-semibold text-[#6f767a]">食べる時間/秒 (Eat Time)</label>
+                <input
+                    type="number"
+                    value={data.eat_seconds}
+                    onChange={(e) => update("eat_seconds", Number(e.target.value))}
+                    className="w-full bg-[#ffffff] text-[#080d12] px-3 py-1.5 rounded border border-[#cad3d8] focus:border-[#24afff] focus:outline-none transition-colors"
+                    onWheel={(e) => e.currentTarget.blur()}
+                />
+            </div>
 
             <EffectListEditor
                 initial={data.effects ?? []}

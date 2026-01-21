@@ -114,7 +114,7 @@ export default function ItemForm({
                                         className={`mt-1 rounded-2xl shadow-sm bg-white overflow-hidden transition-[max-height] duration-500 ${openBasic ? "max-h-500" : "max-h-0"}`}
                                     >
                                         {renderCategoryItem({
-                                            label: "アイテム名", children: (
+                                            label: "アイテムID (Item ID)", children: (
                                                 <input
                                                     type="text"
                                                     value={formData.id}
@@ -126,7 +126,7 @@ export default function ItemForm({
                                         })}
 
                                         {renderCategoryItem({
-                                            label: "アイテムID", children: (
+                                            label: "アイテム名 (Item Name)", children: (
                                                 <input
                                                     type="text"
                                                     value={formData.name}
@@ -138,7 +138,7 @@ export default function ItemForm({
                                         })}
 
                                         {renderCategoryItem({
-                                            label: "カテゴリー", children: (
+                                            label: "カテゴリー (Category)", children: (
                                                 <div className="relative">
                                                     <select
                                                         value={formData.category}
@@ -168,7 +168,7 @@ export default function ItemForm({
                                         })}
 
                                         {renderCategoryItem({
-                                            label: "説明文", children: (
+                                            label: "説明文 (Description)", children: (
                                                 <textarea
                                                     value={(formData.lore || []).join("\n")}
                                                     onChange={(e) => setFormData({ ...formData, lore: e.target.value.split("\n") })}
@@ -194,9 +194,11 @@ export default function ItemForm({
                                             label: "レアリティ / 最大スタック", children: (
                                                 <div className="grid grid-cols-2 gap-3">
                                                     <div className="space-y-1">
-                                                        <div className="text-[11px] font-semibold text-[#6f767a]">Rarity</div>
+                                                        <div className="text-[11px] font-semibold text-[#6f767a]">レアリティ (Rarity)</div>
                                                         <input
                                                             type="number"
+                                                            min="1"
+                                                            max="5"
                                                             value={formData.rarity}
                                                             onChange={(e) => setFormData({ ...formData, rarity: parseFloat(e.target.value) })}
                                                             className={`w-full bg-[#ffffff] text-[#080d12] px-3 py-1.5 rounded border border-[#cad3d8] focus:border-[#24afff] focus:outline-none transition-colors ${formErrors.rarity ? "border-[#ff6161] bg-[#fef2f3]" : ""
@@ -205,9 +207,10 @@ export default function ItemForm({
                                                         />
                                                     </div>
                                                     <div className="space-y-1">
-                                                        <div className="text-[11px] font-semibold text-[#6f767a]">Max Stack</div>
+                                                        <div className="text-[11px] font-semibold text-[#6f767a]">最大スタック (Max Stack)</div>
                                                         <input
                                                             type="number"
+                                                            min="1"
                                                             value={formData.max_stack}
                                                             onChange={(e) => setFormData({ ...formData, max_stack: parseFloat(e.target.value) })}
                                                             className={`w-full bg-[#ffffff] text-[#080d12] px-3 py-1.5 rounded border border-[#cad3d8] focus:border-[#24afff] focus:outline-none transition-colors ${formErrors.max_stack ? "border-[#ff6161] bg-[#fef2f3]" : ""
@@ -221,20 +224,28 @@ export default function ItemForm({
 
                                         {renderCategoryItem({
                                             label: "Item Model / Custom Model Data", children: (
-                                                <div className="grid grid-cols-2 gap-3">
-                                                    <div className="space-y-1">
-                                                        <div className="text-[11px] font-semibold text-[#6f767a]">Item Model</div>
+                                                <div className="flex gap-3 items-start">
+                                                    <div className="flex-1 space-y-1">
+                                                        <div className="text-[11px] font-semibold text-[#6f767a]">アイテムモデル (Item Model)</div>
                                                         <input
                                                             type="text"
                                                             value={formData.item_model ?? ""}
-                                                            onChange={(e) => setFormData({ ...formData, item_model: e.target.value || null })}
+                                                            onChange={(e) => {
+                                                                const newValue = e.target.value || null;
+                                                                setFormData({ 
+                                                                    ...formData, 
+                                                                    item_model: newValue,
+                                                                    // Item Modelが空になったらCustom Model Dataもクリア
+                                                                    custom_model_data: newValue ? formData.custom_model_data : null
+                                                                });
+                                                            }}
                                                             placeholder="common:items/crystal"
                                                             className="w-full bg-[#ffffff] text-[#080d12] px-3 py-1.5 rounded border border-[#cad3d8] focus:border-[#24afff] focus:outline-none transition-colors placeholder-[#93a0a7]"
                                                         />
                                                     </div>
-                                                    <div className="space-y-1">
-                                                        <div className="text-[11px] font-semibold text-[#6f767a]">Custom Model Data</div>
-                                                        <div className="grid grid-cols-1 gap-2 md:grid-cols-[220px_1fr]">
+                                                    <div className="flex-1 space-y-1">
+                                                        <div className="text-[11px] font-semibold text-[#6f767a]">カスタムモデルデータ (Custom Model Data)</div>
+                                                        <div className="flex gap-2">
                                                             <select
                                                                 value={formData.custom_model_data?.type ?? "none"}
                                                                 onChange={(e) => {
@@ -248,7 +259,8 @@ export default function ItemForm({
                                                                     if (newType === "strings") setFormData({ ...formData, custom_model_data: { type: "strings", value: [] } as any });
                                                                     if (newType === "colors") setFormData({ ...formData, custom_model_data: { type: "colors", value: [] } as any });
                                                                 }}
-                                                                className="w-full bg-[#ffffff] text-[#080d12] px-3 py-1.5 rounded border border-[#cad3d8] focus:border-[#24afff] focus:outline-none transition-colors text-sm"
+                                                                disabled={!formData.item_model}
+                                                                className="w-[140px] bg-[#ffffff] text-[#080d12] px-3 py-1.5 rounded border border-[#cad3d8] focus:border-[#24afff] focus:outline-none transition-colors disabled:bg-[#f6f9fb] disabled:text-[#93a0a7] disabled:cursor-not-allowed appearance-none"
                                                             >
                                                                 <option value="none">None (無効)</option>
                                                                 <option value="floats">Floats (数値配列)</option>
@@ -286,11 +298,11 @@ export default function ItemForm({
                                                                         }
                                                                     }}
                                                                     placeholder={formData.custom_model_data.type === "colors" ? "16711680, 255" : "value1, value2"}
-                                                                    className="w-full bg-[#ffffff] text-[#080d12] px-3 py-1.5 rounded border border-[#cad3d8] focus:border-[#24afff] focus:outline-none transition-colors placeholder-[#93a0a7] text-sm"
+                                                                    className="flex-1 bg-[#ffffff] text-[#080d12] px-3 py-1.5 rounded border border-[#cad3d8] focus:border-[#24afff] focus:outline-none transition-colors placeholder-[#93a0a7]"
                                                                 />
                                                             ) : (
-                                                                <div className="text-sm text-[#6f767a] flex items-center px-3 py-1.5 border border-[#e2eaee] rounded bg-[#ffffff]">
-                                                                    {formData.custom_model_data?.type === "flags" ? "下でフラグを追加・切替" : "タイプを選択してください"}
+                                                                <div className="flex-1 text-[#6f767a] flex items-center px-3 py-1.5 border border-[#e2eaee] rounded bg-[#ffffff]">
+                                                                    {!formData.item_model ? "Item Modelを先に入力してください" : formData.custom_model_data?.type === "flags" ? "下でフラグを追加・切替" : "タイプを選択してください"}
                                                                 </div>
                                                             )}
                                                         </div>
@@ -348,7 +360,7 @@ export default function ItemForm({
                                         })}
 
                                         {renderCategoryItem({
-                                            label: "ツールチップスタイル", children: (
+                                            label: "ツールチップスタイル (Tooltip Style)", children: (
                                                 <input
                                                     type="text"
                                                     value={formData.tooltip_style ?? ""}
@@ -374,7 +386,7 @@ export default function ItemForm({
                                             label: "価格設定", children: (
                                                 <div className="grid grid-cols-2 gap-3">
                                                     <div className="space-y-1">
-                                                        <div className="text-[11px] font-semibold text-[#6f767a]">Buy Price</div>
+                                                        <div className="text-[11px] font-semibold text-[#6f767a]">購入価格 (Buy Price)</div>
                                                         <input
                                                             type="number"
                                                             value={formData.price?.buy ?? 0}
@@ -383,7 +395,7 @@ export default function ItemForm({
                                                                     ...formData,
                                                                     price: {
                                                                         buy: parseFloat(e.target.value),
-                                                                        sell: formData.price?.sell ?? 0,
+                                                                        sell: formData.price?.can_sell ? (formData.price?.sell ?? 0) : 0,
                                                                         can_sell: formData.price?.can_sell ?? false
                                                                     }
                                                                 })
@@ -393,10 +405,10 @@ export default function ItemForm({
                                                         />
                                                     </div>
                                                     <div className="space-y-1">
-                                                        <div className="text-[11px] font-semibold text-[#6f767a]">Sell Price</div>
+                                                        <div className="text-[11px] font-semibold text-[#6f767a]">売却価格 (Sell Price)</div>
                                                         <input
                                                             type="number"
-                                                            value={formData.price?.sell ?? 0}
+                                                            value={formData.price?.can_sell ? (formData.price?.sell ?? 0) : 0}
                                                             onChange={(e) =>
                                                                 setFormData({
                                                                     ...formData,
@@ -407,7 +419,8 @@ export default function ItemForm({
                                                                     }
                                                                 })
                                                             }
-                                                            className="w-full bg-[#ffffff] text-[#080d12] px-3 py-1.5 rounded border border-[#cad3d8] focus:border-[#24afff] focus:outline-none transition-colors"
+                                                            disabled={!formData.price?.can_sell}
+                                                            className="w-full bg-[#ffffff] text-[#080d12] px-3 py-1.5 rounded border border-[#cad3d8] focus:border-[#24afff] focus:outline-none transition-colors disabled:bg-[#f6f9fb] disabled:text-[#93a0a7] disabled:cursor-not-allowed"
                                                             onWheel={(e) => e.currentTarget.blur()}
                                                         />
                                                     </div>
@@ -420,7 +433,7 @@ export default function ItemForm({
                                                                     ...formData,
                                                                     price: {
                                                                         buy: formData.price?.buy ?? 0,
-                                                                        sell: formData.price?.sell ?? 0,
+                                                                        sell: e.target.checked ? (formData.price?.sell ?? 0) : 0,
                                                                         can_sell: e.target.checked
                                                                     }
                                                                 })
@@ -434,13 +447,13 @@ export default function ItemForm({
                                                                     ...formData,
                                                                     price: {
                                                                         buy: formData.price?.buy ?? 0,
-                                                                        sell: formData.price?.sell ?? 0,
+                                                                        sell: !(formData.price?.can_sell ?? false) ? (formData.price?.sell ?? 0) : 0,
                                                                         can_sell: !(formData.price?.can_sell ?? false)
                                                                     }
                                                                 })
                                                             }
                                                         >
-                                                            Can Sell (売却可能)
+                                                            売却可能 (Can Sell)
                                                         </label>
                                                     </div>
                                                 </div>
@@ -448,7 +461,7 @@ export default function ItemForm({
                                         })}
 
                                         {renderCategoryItem({
-                                            label: "タグ", children: (
+                                            label: "タグ (Tags)", children: (
                                                 <TagsInput
                                                     tags={formData.tags || []}
                                                     onChange={(tags) => setFormData({ ...formData, tags })}

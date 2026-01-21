@@ -1,6 +1,4 @@
 import { TbTrash, TbPlus } from "react-icons/tb";
-import NumberInput from "@/components/form/NumberInput";
-import TextField from "@/components/form/TextField";
 import { Effect } from "@/features/items/types";
 
 type Props = {
@@ -24,12 +22,12 @@ export default function EffectListEditor({ initial, onChange }: Props) {
     };
 
     return (
-        <div className="bg-[#1f2227] p-4 rounded space-y-4">
+        <div className="bg-[#ffffff] rounded-xl border border-[#e2eaee] p-4 space-y-4">
             <div className="flex justify-between items-center mb-2">
-                <h3 className="text-lg font-semibold">Effects (エフェクト)</h3>
+                <h3 className="text-lg font-semibold text-[#080d12]">Effects (エフェクト)</h3>
                 <button
                     onClick={addEffect}
-                    className="flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white text-sm px-3 py-1 rounded"
+                    className="flex items-center gap-1 bg-[#24afff] hover:bg-[#099bff] text-white text-sm px-3 py-1.5 rounded transition-colors"
                 >
                     <TbPlus size={16} />
                     追加
@@ -39,35 +37,59 @@ export default function EffectListEditor({ initial, onChange }: Props) {
             {initial.map((eff, index) => (
                 <div
                     key={index}
-                    className="bg-[#2a2d33] p-4 rounded space-y-3 border border-gray-700"
+                    className="bg-[#f6f9fb] p-4 rounded-xl space-y-3 border border-[#e2eaee]"
                 >
-                    <div className="text-md font-semibold text-gray-300 mb-1">
-                        Effect #{index + 1}
+                    <div className="text-md font-semibold text-[#080d12] mb-1">
+                        エフェクト #{index + 1}
                     </div>
-                    <TextField
-                        label="Effect"
-                        value={eff.effect}
-                        onChange={(v) => update(index, "effect", v)}
-                    />
-                    <NumberInput
-                        label="Duration"
-                        value={eff.duration}
-                        onChange={(v) => update(index, "duration", v)}
-                    />
-                    <NumberInput
-                        label="Amplifier"
-                        value={eff.amplifier}
-                        onChange={(v) => update(index, "amplifier", v)}
-                    />
-                    <NumberInput
-                        label="Chance"
-                        value={eff.chance}
-                        step={0.1}
-                        onChange={(v) => update(index, "chance", v)}
-                    />
+                    
+                    <div className="space-y-1">
+                        <label className="block text-[11px] font-semibold text-[#6f767a]">エフェクト (Effect)</label>
+                        <input
+                            type="text"
+                            value={eff.effect}
+                            onChange={(e) => update(index, "effect", e.target.value)}
+                            className="w-full bg-[#ffffff] text-[#080d12] px-3 py-1.5 rounded border border-[#cad3d8] focus:border-[#24afff] focus:outline-none transition-colors placeholder-[#93a0a7]"
+                        />
+                    </div>
+
+                    <div className="space-y-1">
+                        <label className="block text-[11px] font-semibold text-[#6f767a]">持続時間 (Duration)</label>
+                        <input
+                            type="number"
+                            value={eff.duration}
+                            onChange={(e) => update(index, "duration", Number(e.target.value))}
+                            className="w-full bg-[#ffffff] text-[#080d12] px-3 py-1.5 rounded border border-[#cad3d8] focus:border-[#24afff] focus:outline-none transition-colors"
+                            onWheel={(e) => e.currentTarget.blur()}
+                        />
+                    </div>
+
+                    <div className="space-y-1">
+                        <label className="block text-[11px] font-semibold text-[#6f767a]">増幅器 (Amplifier)</label>
+                        <input
+                            type="number"
+                            value={eff.amplifier}
+                            onChange={(e) => update(index, "amplifier", Number(e.target.value))}
+                            className="w-full bg-[#ffffff] text-[#080d12] px-3 py-1.5 rounded border border-[#cad3d8] focus:border-[#24afff] focus:outline-none transition-colors"
+                            onWheel={(e) => e.currentTarget.blur()}
+                        />
+                    </div>
+
+                    <div className="space-y-1">
+                        <label className="block text-[11px] font-semibold text-[#6f767a]">確率 (Chance)</label>
+                        <input
+                            type="number"
+                            value={eff.chance}
+                            step={0.1}
+                            onChange={(e) => update(index, "chance", Number(e.target.value))}
+                            className="w-full bg-[#ffffff] text-[#080d12] px-3 py-1.5 rounded border border-[#cad3d8] focus:border-[#24afff] focus:outline-none transition-colors"
+                            onWheel={(e) => e.currentTarget.blur()}
+                        />
+                    </div>
+
                     <button
                         onClick={() => removeEffect(index)}
-                        className="text-red-400 text-sm mt-1 flex items-center gap-1 hover:underline"
+                        className="text-[#ff6161] hover:text-[#ff4d4d] text-sm mt-1 flex items-center gap-1 transition-colors"
                     >
                         <TbTrash size={16} />
                         削除

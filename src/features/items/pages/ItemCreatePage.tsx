@@ -42,7 +42,6 @@ export default function ItemCreatePage() {
         }, 500);
     };
 
-    // クリーンアップを追加
     useEffect(() => {
         return () => {
             document.body.classList.remove("shake");
