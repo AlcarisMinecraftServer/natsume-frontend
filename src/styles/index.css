@@ -1,7 +1,117 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Noto+Sans+JP:wght@100..900&display=swap');
+
 @import "tailwindcss";
 
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  color: #f2f2fb;
-  background-color: #1c1e22;
+html {
+  -webkit-text-size-adjust: 100%;
+  tab-size: 4;
+  line-height: 1.5;
+  font-family: Inter, Arial, Hiragino Kaku Gothic ProN, Hiragino Sans, Noto Sans JP, sans-serif, Segoe UI Emoji, Segoe UI Symbol;
+  font-feature-settings: normal;
+  font-variation-settings: normal;
+  -webkit-tap-highlight-color: transparent
+}
+
+@layer base {
+
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    appearance: none;
+  }
+
+  input[type="number"] {
+    appearance: none;
+    -moz-appearance: textfield;
+  }
+}
+
+@keyframes shake {
+  from {
+    transform: translateX(-4px) translateY(-4px);
+  }
+
+  10% {
+    transform: translateX(4px) translateY(-4px);
+  }
+
+  15% {
+    transform: translateX(-4px) translateY(4px);
+  }
+
+  20% {
+    transform: translateX(4px) translateY(4px);
+  }
+
+  25% {
+    transform: translateX(-4px) translateY(-4px);
+  }
+
+  30% {
+    transform: translateX(-4px) translateY(4px);
+  }
+
+  35% {
+    transform: translateX(4px) translateY(-4px);
+  }
+
+  40% {
+    transform: translateX(-6px) translateY(-6px);
+  }
+
+  45% {
+    transform: translateX(6px) translateY(6px);
+  }
+
+  50% {
+    transform: translateX(6px) translateY(-6px);
+  }
+
+  55% {
+    transform: translateX(-6px) translateY(6px);
+  }
+
+  60% {
+    transform: translateX(6px) translateY(6px);
+  }
+
+  65% {
+    transform: translateX(-6px) translateY(-6px);
+  }
+
+  70% {
+    transform: translateX(-6px) translateY(6px);
+  }
+
+  75% {
+    transform: translateX(6px) translateY(-6px);
+  }
+
+  80% {
+    transform: translateX(-6px) translateY(-6px);
+  }
+
+  80% {
+    transform: translateX(6px) translateY(6px);
+  }
+
+  90% {
+    transform: translateX(6px) translateY(-6px);
+  }
+
+  90% {
+    transform: translateX(-6px) translateY(6px);
+  }
+
+  100% {
+    transform: translateX(6px) translateY(6px);
+  }
+
+  to {
+    transform: translateX(0) translateY(0);
+  }
+}
+
+body.shake {
+  animation: shake 0.4s ease-in-out;
+  overflow-x: hidden;
 }

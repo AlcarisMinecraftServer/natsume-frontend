@@ -11,6 +11,12 @@ export type Price = {
     can_sell: boolean;
 };
 
+export type CustomModelData =
+    | { type: 'floats'; value: number[] }
+    | { type: 'flags'; value: boolean[] }
+    | { type: 'strings'; value: string[] }
+    | { type: 'colors'; value: number[] };
+
 export type FormData = {
     id: string;
     name: string;
@@ -18,7 +24,9 @@ export type FormData = {
     lore: string[];
     rarity: number;
     max_stack: number;
-    custom_model_data: number;
+    custom_model_data: CustomModelData | null;
+    item_model: string | null;
+    tooltip_style: string | null;
     price: Price;
     tags: Tag[];
     data: Record<string, any>;
@@ -63,10 +71,6 @@ export interface DefaultRule {
 
 export interface Condition {
     blocks: string[];
-    speed: number;
-    correct_for_drops: boolean;
-};
-
-export interface RulesEditorProps {
-    rawJson: Rules;
+    speed?: number;
+    correct_for_drops?: boolean;
 }

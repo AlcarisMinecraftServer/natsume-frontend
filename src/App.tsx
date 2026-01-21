@@ -1,5 +1,3 @@
-import './styles/App.css'
-
 import { Slide, ToastContainer } from 'react-toastify'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { Suspense, lazy } from 'react'
