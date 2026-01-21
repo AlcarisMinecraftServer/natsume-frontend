@@ -235,7 +235,6 @@ export default function ItemForm({
                                                                 setFormData({ 
                                                                     ...formData, 
                                                                     item_model: newValue,
-                                                                    // Item Modelが空になったらCustom Model Dataもクリア
                                                                     custom_model_data: newValue ? formData.custom_model_data : null
                                                                 });
                                                             }}
@@ -260,7 +259,7 @@ export default function ItemForm({
                                                                     if (newType === "colors") setFormData({ ...formData, custom_model_data: { type: "colors", value: [] } as any });
                                                                 }}
                                                                 disabled={!formData.item_model}
-                                                                className="w-[140px] bg-[#ffffff] text-[#080d12] px-3 py-1.5 rounded border border-[#cad3d8] focus:border-[#24afff] focus:outline-none transition-colors disabled:bg-[#f6f9fb] disabled:text-[#93a0a7] disabled:cursor-not-allowed appearance-none"
+                                                                className="w-35 bg-[#ffffff] text-[#080d12] px-3 py-1.5 rounded border border-[#cad3d8] focus:border-[#24afff] focus:outline-none transition-colors disabled:bg-[#f6f9fb] disabled:text-[#93a0a7] disabled:cursor-not-allowed appearance-none"
                                                             >
                                                                 <option value="none">None (無効)</option>
                                                                 <option value="floats">Floats (数値配列)</option>

@@ -6,6 +6,7 @@ import { defaultSchemas } from "../schemas";
 import { toast } from "react-toastify";
 
 import LoadingSpinner from "@/features/common/LoadingSpinner";
+import { apiFetch } from "@/services/apiFetch";
 
 const ItemForm = lazy(() => import("../components/ItemForm"));
 
@@ -75,12 +76,8 @@ export default function ItemCreatePage() {
         };
 
         try {
-            const res = await fetch(`${import.meta.env.VITE_API_URL}/items`, {
+            const res = await apiFetch(`/items`, {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${import.meta.env.VITE_API_KEY}`,
-                },
                 body: JSON.stringify(payload),
             });
 

@@ -14,6 +14,7 @@ import {
     FaSortDown,
 } from "react-icons/fa";
 import { toast } from "react-toastify";
+import { apiFetch } from "@/services/apiFetch";
 
 interface Tag {
     label: string;
@@ -26,6 +27,12 @@ interface Item {
     category: string;
     version: number;
     tags?: Tag[];
+    last_actor?: {
+        id?: string | null;
+        username?: string | null;
+        global_name?: string | null;
+        avatar_url?: string | null;
+    } | null;
     [key: string]: any;
 }
 
@@ -118,11 +125,7 @@ export default function ItemsPage() {
                 });
             }
 
-            fetch(`${import.meta.env.VITE_API_URL}/items`, {
-                headers: {
-                    Authorization: `Bearer ${import.meta.env.VITE_API_KEY}`,
-                },
-            })
+            apiFetch(`/items`)
                 .then((res) => {
                     if (!res.ok) throw new Error("API error");
                     return res.json();
@@ -194,12 +197,7 @@ export default function ItemsPage() {
     const handleDeleteConfirm = () => {
         if (!itemToDelete) return;
 
-        fetch(`${import.meta.env.VITE_API_URL}/items/${itemToDelete.id}`, {
-            method: "DELETE",
-            headers: {
-                Authorization: `Bearer ${import.meta.env.VITE_API_KEY}`,
-            },
-        }).then(() => {
+        apiFetch(`/items/${itemToDelete.id}`, { method: "DELETE" }).then(() => {
             setItems((prev) => prev.filter((i) => i.id !== itemToDelete.id));
             toast.success("アイテムを削除しました");
             closeDeleteModal();
@@ -312,7 +310,7 @@ export default function ItemsPage() {
 
             <div className="pb-1.5">
                 <div className="bg-white rounded-2xl border border-[#e9eef1] overflow-hidden">
-                    <div className="grid grid-cols-[64px_minmax(200px,1fr)_104px] md:grid-cols-[72px_minmax(260px,1fr)_200px_160px_220px_120px] gap-2 px-3 py-2 text-xs font-bold text-[#6f767a] bg-[#fbfdff] border-b border-[#e9eef1]">
+                    <div className="grid grid-cols-[64px_minmax(200px,1fr)_104px] md:grid-cols-[72px_minmax(260px,1fr)_200px_160px_220px_240px_120px] gap-2 px-3 py-2 text-xs font-bold text-[#6f767a] bg-[#fbfdff] border-b border-[#e9eef1]">
                         <div></div>
 
                         <button
@@ -344,6 +342,8 @@ export default function ItemsPage() {
 
                         <div className="hidden md:block">ユーザー</div>
 
+                        <div className="hidden md:block">タグ</div>
+
                         <div className="text-right"></div>
                     </div>
 
@@ -354,7 +354,16 @@ export default function ItemsPage() {
                         {paginatedItems.map((item) => (
                             <div
                                 key={item.id}
-                                className="grid grid-cols-[64px_minmax(200px,1fr)_104px] md:grid-cols-[72px_minmax(260px,1fr)_200px_160px_220px_120px] gap-2 px-3 py-2 items-center border-b border-[#e9eef1] last:border-b-0 hover:bg-[#f6f9fb] transition-colors"
+                                role="button"
+                                tabIndex={0}
+                                onClick={() => navigate(`/items/edit/${item.id}`)}
+                                onKeyDown={(e) => {
+                                    if (e.key === "Enter" || e.key === " ") {
+                                        e.preventDefault();
+                                        navigate(`/items/edit/${item.id}`);
+                                    }
+                                }}
+                                className="grid grid-cols-[64px_minmax(200px,1fr)_104px] md:grid-cols-[72px_minmax(260px,1fr)_200px_160px_220px_240px_120px] gap-2 px-3 py-2 items-center border-b border-[#e9eef1] last:border-b-0 hover:bg-[#f6f9fb] transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#24afff]/30"
                             >
                                 <div className="flex justify-center">
                                     <div className="h-12 w-12 rounded-xl bg-[#f1f6f9] flex items-center justify-center text-[#4a5b77] font-bold text-base shrink-0">
@@ -371,27 +380,6 @@ export default function ItemsPage() {
                                             {item.id}
                                         </span>
                                     </div>
-
-                                    {/* {item.tags && item.tags.length > 0 && (
-                                        <div className="flex flex-wrap gap-2 mt-1.5">
-                                            {item.tags.map((tag: Tag, i: number) => {
-                                                const isLightColor =
-                                                    /^#(?:[fF]{2}|[eE]{2}|[dD]{2})/.test(tag.color);
-                                                return (
-                                                    <span
-                                                        key={i}
-                                                        className="text-xs px-2.5 py-1 rounded-full font-medium shadow-sm border border-black/5"
-                                                        style={{
-                                                            backgroundColor: tag.color,
-                                                            color: isLightColor ? "#080d12" : "#ffffff",
-                                                        }}
-                                                    >
-                                                        {tag.label}
-                                                    </span>
-                                                );
-                                            })}
-                                        </div>
-                                    )} */}
                                 </div>
 
                                 <div className="hidden md:block">
@@ -410,26 +398,84 @@ export default function ItemsPage() {
 
                                 <div className="pt-0.5">
                                     <div className="flex items-center gap-3">
-                                        <img
-                                            src="https://gravatar.com/avatar/4920e4b91c5f5027973515d5d38f5b23?size=120"
-                                            alt="なまけもの"
-                                            className="h-9 w-9 rounded-full border border-black/5 shadow-sm"
-                                            loading="lazy"
-                                        />
+                                        {item.last_actor?.avatar_url &&
+                                            (item.last_actor?.global_name || item.last_actor?.username) &&
+                                            item.last_actor?.username !== "unknown" ? (
+                                            <img
+                                                src={item.last_actor.avatar_url}
+                                                alt={item.last_actor.global_name ?? item.last_actor.username ?? "-"}
+                                                className="h-9 w-9 rounded-full border border-black/5 shadow-sm"
+                                                loading="lazy"
+                                            />
+                                        ) : (
+                                            <div
+                                                className="h-9 w-9 rounded-full border border-black/5 shadow-sm flex items-center justify-center text-white font-bold"
+                                                style={{ backgroundColor: "#4a5b77" }}
+                                            >
+                                                {(
+                                                    (item.last_actor?.global_name || item.last_actor?.username) &&
+                                                        item.last_actor?.username !== "unknown"
+                                                        ? item.last_actor?.global_name ?? item.last_actor?.username ?? "-"
+                                                        : "-"
+                                                )
+                                                    .charAt(0)
+                                                    .toUpperCase()}
+                                            </div>
+                                        )}
                                         <div className="min-w-0">
                                             <div className="text-sm font-bold text-[#080d12] truncate">
-                                                なまけもの
+                                                {(item.last_actor?.global_name || item.last_actor?.username) &&
+                                                    item.last_actor?.username !== "unknown"
+                                                    ? item.last_actor?.global_name ?? item.last_actor?.username ?? "-"
+                                                    : "-"}
                                             </div>
                                             <div className="text-xs text-[#99a2a7] truncate">
-                                                Placeholder User
+                                                {item.last_actor?.global_name &&
+                                                    item.last_actor?.username &&
+                                                    item.last_actor?.username !== "unknown"
+                                                    ? item.last_actor.username
+                                                    : "-"}
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
+                                <div className="hidden md:flex items-center min-w-0">
+                                    {item.tags && item.tags.length > 0 ? (
+                                        <div className="flex items-center gap-1.5 overflow-hidden min-w-0">
+                                            {item.tags.slice(0, 3).map((tag: Tag, i: number) => {
+                                                const isLightColor =
+                                                    /^#(?:[fF]{2}|[eE]{2}|[dD]{2})/.test(tag.color);
+                                                return (
+                                                    <span
+                                                        key={`${tag.label}-${i}`}
+                                                        className="shrink-0 text-xs px-2 py-0.5 rounded-full font-semibold border border-black/5"
+                                                        style={{
+                                                            backgroundColor: tag.color,
+                                                            color: isLightColor ? "#080d12" : "#ffffff",
+                                                        }}
+                                                    >
+                                                        {tag.label}
+                                                    </span>
+                                                );
+                                            })}
+                                            {item.tags.length > 3 && (
+                                                <span className="shrink-0 text-xs font-semibold text-[#6f767a]">
+                                                    +{item.tags.length - 3}
+                                                </span>
+                                            )}
+                                        </div>
+                                    ) : (
+                                        <span className="text-xs text-[#99a2a7]">-</span>
+                                    )}
+                                </div>
+
                                 <div className="flex justify-end gap-2">
                                     <button
-                                        onClick={() => navigate(`/items/edit/${item.id}`)}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            navigate(`/items/edit/${item.id}`);
+                                        }}
                                         className="h-10 w-10 rounded-xl bg-[#f1f6f9] hover:bg-[#e2e8f0] text-[#4a5b77] flex items-center justify-center transition-colors"
                                         title="編集"
                                     >
@@ -437,7 +483,10 @@ export default function ItemsPage() {
                                     </button>
 
                                     <button
-                                        onClick={() => openDeleteModal(item)}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            openDeleteModal(item);
+                                        }}
                                         className="h-10 w-10 rounded-xl bg-[#f1f6f9] hover:bg-[#e2e8f0] text-[#dc2626] flex items-center justify-center transition-colors"
                                         title="削除"
                                     >

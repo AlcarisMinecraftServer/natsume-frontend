@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import { FormData, Tag } from "../types";
 
 import LoadingSpinner from "@/features/common/LoadingSpinner";
+import { apiFetch } from "@/services/apiFetch";
 
 const ItemForm = lazy(() => import("../components/ItemForm"));
 
@@ -34,13 +35,7 @@ export default function ItemEditPage() {
 
         const fetchItem = async () => {
             try {
-                const res = await fetch(`${import.meta.env.VITE_API_URL}/items/${id}`, {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${import.meta.env.VITE_API_KEY}`,
-                    },
-                });
+                const res = await apiFetch(`/items/${id}`, { method: "GET" });
 
                 if (!res.ok) {
                     throw new Error("Failed to fetch item");
@@ -102,12 +97,8 @@ export default function ItemEditPage() {
         };
 
         try {
-            const res = await fetch(`${import.meta.env.VITE_API_URL}/items/${itemId}`, {
+            const res = await apiFetch(`/items/${itemId}`, {
                 method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${import.meta.env.VITE_API_KEY}`,
-                },
                 body: JSON.stringify(payload),
             });
 

@@ -2,8 +2,11 @@ import { useState, useEffect } from 'react';
 import { FaCube, FaScroll, FaFolder, FaTicketAlt, FaUserCog, FaSignOutAlt, FaBars, FaTasks, FaPaintBrush } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
+import { useAuth } from '@/features/auth/context/AuthContext';
+
 const NavigationSidebar = () => {
     const navigate = useNavigate();
+    const { actor, logout } = useAuth();
 
     const [currentPath, setCurrentPath] = useState('/items');
     const [isExpanded, setIsExpanded] = useState(true);
@@ -33,9 +36,12 @@ const NavigationSidebar = () => {
 
 
     const handleLogout = () => {
-        console.log('ログアウト');
-        alert('ログアウトしました');
+        logout();
+        navigate('/login');
     };
+
+    const displayName = actor?.global_name || actor?.username || 'unknown';
+    const avatarUrl = actor?.avatar_url || null;
 
     const handleNavClick = (to: string) => {
         setCurrentPath(to);
@@ -201,11 +207,20 @@ const NavigationSidebar = () => {
                                     className="flex items-center gap-0 p-0 rounded-full transition-colors"
                                 >
                                     <span className="w-10 h-10 flex rounded-full overflow-hidden">
-                                        <img
-                                            alt="User avatar"
-                                            className="w-full h-full object-cover"
-                                            src="https://gravatar.com/avatar/4920e4b91c5f5027973515d5d38f5b23?size=120"
-                                        />
+                                        {avatarUrl ? (
+                                            <img
+                                                alt={displayName}
+                                                className="w-full h-full object-cover"
+                                                src={avatarUrl}
+                                            />
+                                        ) : (
+                                            <span
+                                                className="w-full h-full flex items-center justify-center text-white font-bold"
+                                                style={{ backgroundColor: '#4a5b77' }}
+                                            >
+                                                {displayName.charAt(0).toUpperCase()}
+                                            </span>
+                                        )}
                                     </span>
                                 </button>
 
@@ -227,11 +242,20 @@ const NavigationSidebar = () => {
                             <div className="flex flex-col items-center gap-3">
                                 <button className="flex items-center p-0 rounded-full">
                                     <span className="w-10 h-10 flex rounded-full overflow-hidden">
-                                        <img
-                                            alt="User avatar"
-                                            className="w-full h-full object-cover"
-                                            src="https://gravatar.com/avatar/4920e4b91c5f5027973515d5d38f5b23?size=120"
-                                        />
+                                        {avatarUrl ? (
+                                            <img
+                                                alt={displayName}
+                                                className="w-full h-full object-cover"
+                                                src={avatarUrl}
+                                            />
+                                        ) : (
+                                            <span
+                                                className="w-full h-full flex items-center justify-center text-white font-bold"
+                                                style={{ backgroundColor: '#4a5b77' }}
+                                            >
+                                                {displayName.charAt(0).toUpperCase()}
+                                            </span>
+                                        )}
                                     </span>
                                 </button>
 
