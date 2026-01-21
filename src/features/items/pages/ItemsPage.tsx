@@ -358,6 +358,7 @@ export default function ItemsPage() {
                                 tabIndex={0}
                                 onClick={() => navigate(`/items/edit/${item.id}`)}
                                 onKeyDown={(e) => {
+                                    if (e.target !== e.currentTarget) return;
                                     if (e.key === "Enter" || e.key === " ") {
                                         e.preventDefault();
                                         navigate(`/items/edit/${item.id}`);
