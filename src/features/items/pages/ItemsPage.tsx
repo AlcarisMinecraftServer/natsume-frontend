@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import {
     FaPlus,
     FaSearch,
@@ -58,7 +58,10 @@ const categoryLabel = (key: string) => CATEGORY_LABELS[key] ?? key;
 
 export default function ItemsPage() {
     const navigate = useNavigate();
+    const location = useLocation();
+    const [searchParams, setSearchParams] = useSearchParams();
     const isFirstLoad = useRef(true);
+    const didMount = useRef(false);
 
     const [items, setItems] = useState<Item[]>([]);
     const [loading, setLoading] = useState(true);
@@ -75,7 +78,12 @@ export default function ItemsPage() {
     const [sortKey, setSortKey] = useState<SortKey>("id");
     const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
-    const [currentPage, setCurrentPage] = useState(1);
+    const parsePage = (value: string | null) => {
+        const n = Number.parseInt(value ?? "1", 10);
+        return Number.isFinite(n) && n > 0 ? n : 1;
+    };
+
+    const [currentPage, setCurrentPage] = useState(() => parsePage(searchParams.get("page")));
 
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [deleteClosing, setDeleteClosing] = useState(false);
@@ -217,9 +225,31 @@ export default function ItemsPage() {
     };
 
     useEffect(() => {
+        if (!didMount.current) {
+            didMount.current = true;
+            return;
+        }
+
         setCurrentPage(1);
         setListAnimKey((k) => k + 1);
     }, [keyword, selectedCategory, selectedTags, sortKey, sortOrder]);
+
+    useEffect(() => {
+        const pageFromQuery = parsePage(searchParams.get("page"));
+        if (pageFromQuery !== currentPage) {
+            setCurrentPage(pageFromQuery);
+        }
+    }, [searchParams, currentPage]);
+
+    useEffect(() => {
+        const next = new URLSearchParams(searchParams);
+        if (currentPage <= 1) next.delete("page");
+        else next.set("page", String(currentPage));
+
+        if (next.toString() !== searchParams.toString()) {
+            setSearchParams(next, { replace: true });
+        }
+    }, [currentPage, searchParams, setSearchParams]);
 
     const filteredItems = useMemo(() => {
         const kw = keyword.toLowerCase();
@@ -254,6 +284,12 @@ export default function ItemsPage() {
     }, [filteredItems, sortKey, sortOrder]);
 
     const totalPages = Math.ceil(sortedItems.length / ITEMS_PER_PAGE);
+
+    useEffect(() => {
+        if (totalPages > 0 && currentPage > totalPages) {
+            setCurrentPage(totalPages);
+        }
+    }, [totalPages, currentPage]);
     const paginatedItems = sortedItems.slice(
         (currentPage - 1) * ITEMS_PER_PAGE,
         currentPage * ITEMS_PER_PAGE
@@ -356,12 +392,12 @@ export default function ItemsPage() {
                                 key={item.id}
                                 role="button"
                                 tabIndex={0}
-                                onClick={() => navigate(`/items/edit/${item.id}`)}
+                                onClick={() => navigate(`/items/edit/${item.id}${location.search}`)}
                                 onKeyDown={(e) => {
                                     if (e.target !== e.currentTarget) return;
                                     if (e.key === "Enter" || e.key === " ") {
                                         e.preventDefault();
-                                        navigate(`/items/edit/${item.id}`);
+                                        navigate(`/items/edit/${item.id}${location.search}`);
                                     }
                                 }}
                                 className="grid grid-cols-[64px_minmax(200px,1fr)_104px] md:grid-cols-[72px_minmax(260px,1fr)_200px_160px_220px_240px_120px] gap-2 px-3 py-2 items-center border-b border-[#e9eef1] last:border-b-0 hover:bg-[#f6f9fb] transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#24afff]/30"
@@ -475,7 +511,7 @@ export default function ItemsPage() {
                                     <button
                                         onClick={(e) => {
                                             e.stopPropagation();
-                                            navigate(`/items/edit/${item.id}`);
+                                            navigate(`/items/edit/${item.id}${location.search}`);
                                         }}
                                         className="h-10 w-10 rounded-xl bg-[#f1f6f9] hover:bg-[#e2e8f0] text-[#4a5b77] flex items-center justify-center transition-colors"
                                         title="編集"
@@ -529,7 +565,7 @@ export default function ItemsPage() {
             )}
 
             <Link
-                to="/items/create"
+                to={`/items/create${location.search}`}
                 className="flex fixed bottom-8 right-8 gap-2 ease-out transition-colors duration-300 items-center justify-center rounded-full bg-[#080d12] text-white py-2.5 px-4 leading-[1.3] font-bold"
             >
                 <FaPlus />

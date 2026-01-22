@@ -28,6 +28,7 @@ type Props = {
     tagError: { label?: boolean; color?: boolean };
     setTagError: (error: { label?: boolean; color?: boolean }) => void;
     handleSubmit: () => void;
+    onCancel?: () => void;
 };
 
 function SectionToggle({ label, isOpen, onToggle }: { label: string; isOpen: boolean; onToggle: () => void }) {
@@ -74,6 +75,7 @@ export default function ItemForm({
     tagError,
     setTagError,
     handleSubmit,
+    onCancel,
 }: Props) {
     const navigate = useNavigate();
     const [editorMode, setEditorMode] = useState<"visual" | "raw">("visual");
@@ -92,13 +94,13 @@ export default function ItemForm({
                 <div className="flex-1 overflow-y-auto p-6 w-full">
                     <div className="max-w-6xl mx-auto min-h-full">
                         <div className="flex justify-between items-center mb-2">
-                            <h1 className="text-2xl font-bold text-[#080d12]">{title}</h1>
-                            <button
-                                onClick={() => navigate("/items")}
-                                className="text-[#6f767a] hover:text-[#080d12] font-medium transition-colors px-4 py-2"
-                            >
-                                キャンセル
-                            </button>
+                             <h1 className="text-2xl font-bold text-[#080d12]">{title}</h1>
+                             <button
+                                 onClick={() => (onCancel ? onCancel() : navigate("/items"))}
+                                 className="text-[#6f767a] hover:text-[#080d12] font-medium transition-colors px-4 py-2"
+                             >
+                                 キャンセル
+                             </button>
                         </div>
 
                         {editorMode === "visual" ? (
