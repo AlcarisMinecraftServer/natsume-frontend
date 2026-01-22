@@ -46,6 +46,11 @@ const recoveryToastId = "connection-recovered-toast";
 
 const MODAL_CLOSE_MS = 500;
 
+const parsePageParam = (value: string | null) => {
+    const n = Number.parseInt(value ?? "1", 10);
+    return Number.isFinite(n) && n > 0 ? n : 1;
+};
+
 const CATEGORY_LABELS: Record<string, string> = {
     weapon: "武器",
     tool: "ツール",
@@ -78,12 +83,8 @@ export default function ItemsPage() {
     const [sortKey, setSortKey] = useState<SortKey>("id");
     const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
-    const parsePage = (value: string | null) => {
-        const n = Number.parseInt(value ?? "1", 10);
-        return Number.isFinite(n) && n > 0 ? n : 1;
-    };
-
-    const [currentPage, setCurrentPage] = useState(() => parsePage(searchParams.get("page")));
+    const pageParam = searchParams.get("page");
+    const [currentPage, setCurrentPage] = useState(() => parsePageParam(pageParam));
 
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [deleteClosing, setDeleteClosing] = useState(false);
@@ -235,11 +236,9 @@ export default function ItemsPage() {
     }, [keyword, selectedCategory, selectedTags, sortKey, sortOrder]);
 
     useEffect(() => {
-        const pageFromQuery = parsePage(searchParams.get("page"));
-        if (pageFromQuery !== currentPage) {
-            setCurrentPage(pageFromQuery);
-        }
-    }, [searchParams, currentPage]);
+        const pageFromQuery = parsePageParam(pageParam);
+        setCurrentPage((prev) => (prev === pageFromQuery ? prev : pageFromQuery));
+    }, [pageParam]);
 
     useEffect(() => {
         const next = new URLSearchParams(searchParams);
