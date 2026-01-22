@@ -1,10 +1,11 @@
 import { useEffect, useState, lazy, Suspense } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
 
 import { FormData, Tag } from "../types";
-import { defaultSchemas } from "../schemas";
 
 import LoadingSpinner from "@/features/common/LoadingSpinner";
+import { apiFetch } from "@/services/apiFetch";
 
 const ItemForm = lazy(() => import("../components/ItemForm"));
 
@@ -32,47 +33,43 @@ export default function ItemEditPage() {
             return;
         }
 
-        fetch(`${import.meta.env.VITE_API_URL}/items/${id}`, {
-            method: "GET",
-            headers: {
-                Authorization: `Bearer ${import.meta.env.VITE_API_KEY}`,
-            },
-        })
-            .then(res => res.json())
-            .then(json => {
-                const item = json.data;
-                const schema = defaultSchemas[item.category as keyof typeof defaultSchemas] || {};
-                const data = {
-                    ...schema,
-                    ...(item.data?.data ?? item.data ?? {})
+        const fetchItem = async () => {
+            try {
+                const res = await apiFetch(`/items/${id}`, { method: "GET" });
+
+                if (!res.ok) {
+                    throw new Error("Failed to fetch item");
+                }
+
+                const jsonResponse = await res.json();
+                const itemData = jsonResponse.data;
+
+                if (!itemData) {
+                    throw new Error("Invalid API response structure");
+                }
+
+                const formattedData: FormData = {
+                    ...itemData,
                 };
 
-                setItemId(item.id);
-
-                setFormData({
-                    id: item.id || "",
-                    name: item.name || "",
-                    category: item.category || "food",
-                    lore: Array.isArray(item.lore) ? item.lore : [""],
-                    rarity: item.rarity ?? 1,
-                    max_stack: item.max_stack ?? 64,
-                    custom_model_data: item.custom_model_data ?? 0,
-                    price: item.price ?? { buy: 0, sell: 0, can_sell: false },
-                    tags: item.tags ?? [],
-                    data,
-                });
-            })
-            .catch(error => {
-                console.error("Fetch Error", error);
+                setItemId(itemData.id);
+                setFormData(formattedData);
+            } catch (error) {
+                console.error(error);
+                toast.error(<div>データの取得に失敗しました</div>);
                 navigate("/items");
-            })
-            .finally(() => setLoading(false));
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchItem();
     }, [id, navigate]);
 
-    const handleSubmit = async () => {
-        if (!formData) return;
+    const validateForm = () => {
+        if (!formData) return false;
 
-        const errors: Partial<Record<keyof FormData, boolean>> = {
+        const errors = {
             id: formData.id.trim() === "",
             name: formData.name.trim() === "",
             lore: formData.lore.every(line => line.trim() === ""),
@@ -80,27 +77,41 @@ export default function ItemEditPage() {
             max_stack: formData.max_stack < 1,
         };
         setFormErrors(errors);
+        return !Object.values(errors).some(Boolean);
+    };
 
-        if (Object.values(errors).some(Boolean)) {
+    const handleSubmit = async () => {
+        if (!formData) return;
+
+        if (!validateForm()) {
             triggerGlobalShake();
+            toast.error(<div>必須項目が未入力です。<br />入力内容をご確認ください。</div>);
             return;
         }
 
         const payload = {
             ...formData,
             version: Math.floor(Date.now() / 1000),
+            item_model: formData.item_model || null,
+            tooltip_style: formData.tooltip_style || null,
         };
 
-        await fetch(`${import.meta.env.VITE_API_URL}/items/${itemId}`, {
-            method: "PATCH",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${import.meta.env.VITE_API_KEY}`,
-            },
-            body: JSON.stringify(payload),
-        });
+        try {
+            const res = await apiFetch(`/items/${itemId}`, {
+                method: "PATCH",
+                body: JSON.stringify(payload),
+            });
 
-        navigate("/items");
+            if (!res.ok) {
+                throw new Error("Failed to update item");
+            }
+
+            toast.success(<div>アイテムを更新しました</div>);
+            navigate("/items");
+        } catch (error) {
+            console.error(error);
+            toast.error(<div>更新に失敗しました</div>);
+        }
     };
 
     if (loading || !formData) {
@@ -112,13 +123,12 @@ export default function ItemEditPage() {
             <ItemForm
                 title="編集"
                 formData={formData}
-                setFormData={setFormData}
+                setFormData={(newData) => setFormData(newData)}
                 formErrors={formErrors}
                 newTag={newTag}
                 setNewTag={setNewTag}
                 tagError={tagError}
                 setTagError={setTagError}
-                triggerGlobalShake={triggerGlobalShake}
                 handleSubmit={handleSubmit}
             />
         </Suspense>

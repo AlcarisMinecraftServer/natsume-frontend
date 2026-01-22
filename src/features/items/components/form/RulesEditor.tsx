@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import { TbChevronDown, TbChevronUp, TbTrash, TbPlus } from "react-icons/tb";
-import { Condition, DefaultRule, Rules, RulesEditorProps } from "@/features/items/types";
+import { Condition, DefaultRule, Rules } from "@/features/items/types";
+
+type RulesEditorProps = {
+  rawJson: Rules;
+};
 
 export default function RulesEditor({ rawJson }: RulesEditorProps) {
   const [defaultRule, setDefaultRule] = useState<DefaultRule>({
@@ -91,48 +95,61 @@ export default function RulesEditor({ rawJson }: RulesEditorProps) {
   };
 
   return (
-    <div className="p-4 bg-[#2a2d33] rounded border border-gray-600 text-white space-y-6">
-      {/* Default rule */}
-      <div className="space-y-2">
-        <h3 className="text-lg font-semibold">デフォルト設定</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm mb-1">破壊速度</label>
+    <div className="bg-[#ffffff] rounded-xl border border-[#e2eaee] p-4 space-y-6">
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold text-[#080d12]">デフォルト設定</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="space-y-1">
+            <label className="block text-[11px] font-semibold text-[#6f767a]">破壊速度 (Speed)</label>
             <input
               type="number"
               value={defaultRule.speed}
               onChange={(e) => updateDefault("speed", parseFloat(e.target.value))}
-              className="w-full bg-[#1c1e22] text-white px-3 py-2 rounded border border-gray-600"
+              className="w-full bg-[#ffffff] text-[#080d12] px-3 py-1.5 rounded border border-[#cad3d8] focus:border-[#24afff] focus:outline-none transition-colors"
+              onWheel={(e) => e.currentTarget.blur()}
             />
           </div>
-          <div>
-            <label className="block text-sm mb-1">ダメージ</label>
+          <div className="space-y-1">
+            <label className="block text-[11px] font-semibold text-[#6f767a]">ダメージ (Damage)</label>
             <input
               type="number"
               value={defaultRule.damage}
               onChange={(e) => updateDefault("damage", parseInt(e.target.value))}
-              className="w-full bg-[#1c1e22] text-white px-3 py-2 rounded border border-gray-600"
+              className="w-full bg-[#ffffff] text-[#080d12] px-3 py-1.5 rounded border border-[#cad3d8] focus:border-[#24afff] focus:outline-none transition-colors"
+              onWheel={(e) => e.currentTarget.blur()}
             />
           </div>
         </div>
       </div>
 
-      {/* Conditions */}
       <div>
-        <h3 className="text-lg font-semibold mb-2">条件</h3>
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-lg font-semibold text-[#080d12]">条件</h3>
+          <button
+            onClick={addCondition}
+            className="px-3 py-1.5 bg-[#24afff] hover:bg-[#099bff] text-white rounded flex items-center gap-1 transition-colors text-sm font-medium"
+          >
+            <TbPlus size={16} />
+            条件を追加
+          </button>
+        </div>
+
         {conditions.map((cond, idx) => (
-          <div key={idx} className="bg-[#1c1e22] border border-gray-600 rounded p-4 mb-4">
+          <div key={idx} className="bg-[#f6f9fb] border border-[#e2eaee] rounded-xl p-4 mb-3">
             <div className="flex justify-between items-center">
-              <h4 className="font-semibold">条件 {idx + 1}</h4>
-              <button onClick={() => toggleCondition(idx)} className="text-white">
-                {expandedConditions[idx] ? <TbChevronUp /> : <TbChevronDown />}
+              <h4 className="font-semibold text-[#080d12]">条件 {idx + 1}</h4>
+              <button 
+                onClick={() => toggleCondition(idx)} 
+                className="text-[#4b5256] hover:text-[#080d12] transition-colors"
+              >
+                {expandedConditions[idx] ? <TbChevronUp size={20} /> : <TbChevronDown size={20} />}
               </button>
             </div>
 
             {expandedConditions[idx] && (
               <div className="space-y-4 mt-3">
                 <div>
-                  <label className="block text-sm mb-1">ブロックリスト</label>
+                  <label className="block text-[11px] font-semibold text-[#6f767a] mb-2">ブロックリスト (Blocks)</label>
                   {cond.blocks.map((block, blockIdx) => (
                     <div key={blockIdx} className="flex gap-2 mb-2">
                       <input
@@ -141,65 +158,69 @@ export default function RulesEditor({ rawJson }: RulesEditorProps) {
                         onChange={(e) =>
                           updateConditionBlock(idx, blockIdx, e.target.value)
                         }
-                        className="flex-1 bg-[#2a2d33] text-white px-3 py-2 rounded border border-gray-600"
+                        className="flex-1 bg-[#ffffff] text-[#080d12] px-3 py-1.5 rounded border border-[#cad3d8] focus:border-[#24afff] focus:outline-none transition-colors placeholder-[#93a0a7]"
                       />
                       <button
                         onClick={() => removeConditionBlock(idx, blockIdx)}
-                        className="text-red-500 hover:text-red-400"
+                        className="text-[#ff6161] hover:text-[#ff4d4d] transition-colors p-1.5"
                       >
-                        <TbTrash />
+                        <TbTrash size={18} />
                       </button>
                     </div>
                   ))}
                   <button
                     onClick={() => addConditionBlock(idx)}
-                    className="mt-1 px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-sm"
+                    className="mt-1 px-3 py-1.5 bg-[#24afff] hover:bg-[#099bff] text-white rounded text-sm font-medium transition-colors flex items-center gap-1"
                   >
-                    <TbPlus className="inline mr-1" /> ブロックを追加
+                    <TbPlus size={14} />
+                    ブロックを追加
                   </button>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm mb-1">破壊速度</label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <label className="block text-[11px] font-semibold text-[#6f767a]">破壊速度 (Speed)</label>
                     <input
                       type="number"
                       value={cond.speed}
                       onChange={(e) =>
                         updateCondition(idx, "speed", parseFloat(e.target.value))
                       }
-                      className="w-full bg-[#2a2d33] text-white px-3 py-2 rounded border border-gray-600"
+                      className="w-full bg-[#ffffff] text-[#080d12] px-3 py-1.5 rounded border border-[#cad3d8] focus:border-[#24afff] focus:outline-none transition-colors"
+                      onWheel={(e) => e.currentTarget.blur()}
                     />
                   </div>
-                  <div className="flex items-center gap-2 mt-6">
-                    <input
-                      type="checkbox"
-                      checked={cond.correct_for_drops}
-                      onChange={(e) =>
-                        updateCondition(idx, "correct_for_drops", e.target.checked)
-                      }
-                    />
-                    <label>破壊時にドロップする</label>
+                  <div className="flex items-end pb-1">
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={cond.correct_for_drops}
+                        onChange={(e) =>
+                          updateCondition(idx, "correct_for_drops", e.target.checked)
+                        }
+                        className="w-4 h-4 rounded border-[#cad3d8] text-[#24afff] focus:ring-[#24afff] focus:ring-offset-0"
+                      />
+                      <label 
+                        className="text-sm font-semibold text-[#080d12] cursor-pointer select-none"
+                        onClick={() => updateCondition(idx, "correct_for_drops", !cond.correct_for_drops)}
+                      >
+                        破壊時にドロップ (Correct for Drops)
+                      </label>
+                    </div>
                   </div>
                 </div>
 
                 <button
                   onClick={() => removeCondition(idx)}
-                  className="text-red-500 hover:text-red-400 text-sm flex items-center"
+                  className="text-[#ff6161] hover:text-[#ff4d4d] text-sm flex items-center gap-1 transition-colors"
                 >
-                  <TbTrash className="mr-1" /> 条件を削除
+                  <TbTrash size={16} />
+                  条件を削除
                 </button>
               </div>
             )}
           </div>
         ))}
-
-        <button
-          onClick={addCondition}
-          className="mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 flex items-center"
-        >
-          <TbPlus className="mr-1" /> 条件を追加
-        </button>
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import { useState, lazy, Suspense } from "react";
+import { useState, lazy, Suspense, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FormData, Tag } from "../types";
 import { defaultSchemas } from "../schemas";
@@ -6,6 +6,7 @@ import { defaultSchemas } from "../schemas";
 import { toast } from "react-toastify";
 
 import LoadingSpinner from "@/features/common/LoadingSpinner";
+import { apiFetch } from "@/services/apiFetch";
 
 const ItemForm = lazy(() => import("../components/ItemForm"));
 
@@ -22,7 +23,9 @@ export default function ItemCreatePage() {
             lore: [""],
             rarity: 1,
             max_stack: 64,
-            custom_model_data: 0,
+            custom_model_data: null,
+            item_model: null,
+            tooltip_style: null,
             price: { buy: 0, sell: 0, can_sell: false },
             tags: [],
             data: schema,
@@ -37,11 +40,17 @@ export default function ItemCreatePage() {
         document.body.classList.add("shake");
         setTimeout(() => {
             document.body.classList.remove("shake");
-        }, 400);
+        }, 500);
     };
 
+    useEffect(() => {
+        return () => {
+            document.body.classList.remove("shake");
+        };
+    }, []);
+
     const validateForm = () => {
-        const errors: Partial<Record<keyof FormData, boolean>> = {
+        const errors = {
             id: formData.id.trim() === "",
             name: formData.name.trim() === "",
             lore: formData.lore.every(line => line.trim() === ""),
@@ -62,18 +71,25 @@ export default function ItemCreatePage() {
         const payload = {
             ...formData,
             version: Math.floor(Date.now() / 1000),
+            item_model: formData.item_model || null,
+            tooltip_style: formData.tooltip_style || null,
         };
 
-        await fetch(`${import.meta.env.VITE_API_URL}/items`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${import.meta.env.VITE_API_KEY}`,
-            },
-            body: JSON.stringify(payload),
-        });
+        try {
+            const res = await apiFetch(`/items`, {
+                method: "POST",
+                body: JSON.stringify(payload),
+            });
 
-        navigate("/items");
+            if (!res.ok) {
+                throw new Error("Failed to create item");
+            }
+
+            navigate("/items");
+        } catch (error) {
+            console.error(error);
+            toast.error("作成に失敗しました");
+        }
     };
 
     return (
@@ -87,7 +103,6 @@ export default function ItemCreatePage() {
                 setNewTag={setNewTag}
                 tagError={tagError}
                 setTagError={setTagError}
-                triggerGlobalShake={triggerGlobalShake}
                 handleSubmit={handleSubmit}
             />
         </Suspense>
