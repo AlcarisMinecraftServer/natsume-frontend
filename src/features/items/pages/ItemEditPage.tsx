@@ -1,5 +1,5 @@
 import { useEffect, useState, lazy, Suspense } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import { FormData, Tag } from "../types";
@@ -12,6 +12,7 @@ const ItemForm = lazy(() => import("../components/ItemForm"));
 export default function ItemEditPage() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const location = useLocation();
 
     const [itemId, setItemId] = useState<string | null>(null);
     const [formData, setFormData] = useState<FormData | null>(null);
@@ -29,7 +30,7 @@ export default function ItemEditPage() {
 
     useEffect(() => {
         if (!id) {
-            navigate("/items");
+            navigate(`/items${location.search}`);
             return;
         }
 
@@ -57,14 +58,14 @@ export default function ItemEditPage() {
             } catch (error) {
                 console.error(error);
                 toast.error(<div>データの取得に失敗しました</div>);
-                navigate("/items");
+                navigate(`/items${location.search}`);
             } finally {
                 setLoading(false);
             }
         };
 
         fetchItem();
-    }, [id, navigate]);
+    }, [id, navigate, location.search]);
 
     const validateForm = () => {
         if (!formData) return false;
@@ -107,7 +108,7 @@ export default function ItemEditPage() {
             }
 
             toast.success(<div>アイテムを更新しました</div>);
-            navigate("/items");
+            navigate(`/items${location.search}`);
         } catch (error) {
             console.error(error);
             toast.error(<div>更新に失敗しました</div>);
@@ -130,6 +131,7 @@ export default function ItemEditPage() {
                 tagError={tagError}
                 setTagError={setTagError}
                 handleSubmit={handleSubmit}
+                onCancel={() => navigate(`/items${location.search}`)}
             />
         </Suspense>
     );

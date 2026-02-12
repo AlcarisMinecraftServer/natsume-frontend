@@ -1,5 +1,5 @@
 import { useState, lazy, Suspense, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { FormData, Tag } from "../types";
 import { defaultSchemas } from "../schemas";
 
@@ -12,6 +12,7 @@ const ItemForm = lazy(() => import("../components/ItemForm"));
 
 export default function ItemCreatePage() {
     const navigate = useNavigate();
+    const location = useLocation();
 
     const [formData, setFormData] = useState<FormData>(() => {
         const category = "food";
@@ -85,7 +86,7 @@ export default function ItemCreatePage() {
                 throw new Error("Failed to create item");
             }
 
-            navigate("/items");
+            navigate(`/items${location.search}`);
         } catch (error) {
             console.error(error);
             toast.error("作成に失敗しました");
@@ -104,6 +105,7 @@ export default function ItemCreatePage() {
                 tagError={tagError}
                 setTagError={setTagError}
                 handleSubmit={handleSubmit}
+                onCancel={() => navigate(`/items${location.search}`)}
             />
         </Suspense>
     );
