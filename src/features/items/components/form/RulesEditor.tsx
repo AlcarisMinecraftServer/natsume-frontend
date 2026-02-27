@@ -23,7 +23,7 @@ export default function RulesEditor({ rawJson }: RulesEditorProps) {
         setConditions(
           parsed.conditions.map((c: any) => ({
             blocks: Array.isArray(c.blocks) ? c.blocks : [c.blocks],
-            speed: Number(c.speed) ?? 0,
+            speed: Number(c.speed) || 0,
             correct_for_drops: !!c.correct_for_drops,
           }))
         );
