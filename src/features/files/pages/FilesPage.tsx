@@ -170,7 +170,6 @@ export default function FilesPage() {
 
   useEffect(() => {
     void refreshFiles()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onlyMine])
 
   useEffect(() => {
@@ -178,7 +177,6 @@ export default function FilesPage() {
     const next = uploads.find((u) => u.status === 'queued')
     if (!next) return
     void startUpload(next.id)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [uploads, activeUploadId])
 
   const enqueueFiles = (newFiles: File[]) => {

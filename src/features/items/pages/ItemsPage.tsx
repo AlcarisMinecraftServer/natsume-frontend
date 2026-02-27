@@ -7,12 +7,16 @@ import {
     FaTimes,
     FaPencilAlt,
     FaTrash,
+    FaHistory,
     FaChevronLeft,
     FaChevronRight,
     FaSort,
     FaSortUp,
     FaSortDown,
+    FaDownload,
 } from "react-icons/fa";
+import { downloadJson } from "@/features/common/utils/downloadJson";
+import AuditLogModal from "@/features/audit-logs/components/AuditLogModal";
 import { toast } from "react-toastify";
 import { apiFetch } from "@/services/apiFetch";
 
@@ -90,6 +94,10 @@ export default function ItemsPage() {
     const [deleteClosing, setDeleteClosing] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<Item | null>(null);
 
+    const [auditModalOpen, setAuditModalOpen] = useState(false);
+    const [auditClosing, setAuditClosing] = useState(false);
+    const [auditTarget, setAuditTarget] = useState<Item | null>(null);
+
     const [listAnimKey, setListAnimKey] = useState(0);
 
     const openFilterModal = () => {
@@ -117,6 +125,21 @@ export default function ItemsPage() {
             setDeleteModalOpen(false);
             setDeleteClosing(false);
             setItemToDelete(null);
+        }, MODAL_CLOSE_MS);
+    };
+
+    const openAuditModal = (item: Item) => {
+        setAuditTarget(item);
+        setAuditClosing(false);
+        setAuditModalOpen(true);
+    };
+
+    const closeAuditModal = () => {
+        setAuditClosing(true);
+        window.setTimeout(() => {
+            setAuditModalOpen(false);
+            setAuditClosing(false);
+            setAuditTarget(null);
         }, MODAL_CLOSE_MS);
     };
 
@@ -223,6 +246,22 @@ export default function ItemsPage() {
 
     const handleRemoveTag = (tagToRemove: string) => {
         setSelectedTags(selectedTags.filter((tag) => tag !== tagToRemove));
+    };
+
+    const handleExport = async () => {
+        const toastId = "export-toast";
+        toast.loading("エクスポート中...", { toastId, closeButton: false, draggable: false, closeOnClick: false });
+        try {
+            const res = await apiFetch("/items");
+            if (!res.ok) throw new Error("API error");
+            const json = await res.json();
+            const data = (json.data as Item[]).map(({ last_actor: _la, ...rest }) => rest);
+            const date = new Date().toISOString().slice(0, 10);
+            downloadJson(data, `items-${date}.json`);
+            toast.update(toastId, { render: "エクスポート完了", type: "success", isLoading: false, autoClose: 3000, closeButton: false, draggable: false });
+        } catch {
+            toast.update(toastId, { render: "エクスポートに失敗しました", type: "error", isLoading: false, autoClose: 3000, closeButton: false, draggable: false });
+        }
     };
 
     useEffect(() => {
@@ -341,11 +380,19 @@ export default function ItemsPage() {
                         </span>
                     )}
                 </button>
+
+                <button
+                    onClick={handleExport}
+                    className="flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl border bg-white border-[#e9eef1] text-[#4b5256] hover:bg-[#f8fafc] transition-all duration-200 font-medium"
+                >
+                    <FaDownload className="text-[#99a2a7]" />
+                    <span>エクスポート</span>
+                </button>
             </div>
 
             <div className="pb-1.5">
                 <div className="bg-white rounded-2xl border border-[#e9eef1] overflow-hidden">
-                    <div className="grid grid-cols-[64px_minmax(200px,1fr)_104px] md:grid-cols-[72px_minmax(260px,1fr)_200px_160px_220px_240px_120px] gap-2 px-3 py-2 text-xs font-bold text-[#6f767a] bg-[#fbfdff] border-b border-[#e9eef1]">
+                    <div className="grid grid-cols-[64px_minmax(200px,1fr)_104px] md:grid-cols-[72px_minmax(260px,1fr)_200px_160px_220px_240px_160px] gap-2 px-3 py-2 text-xs font-bold text-[#6f767a] bg-[#fbfdff] border-b border-[#e9eef1]">
                         <div></div>
 
                         <button
@@ -399,7 +446,7 @@ export default function ItemsPage() {
                                         navigate(`/items/edit/${item.id}${location.search}`);
                                     }
                                 }}
-                                className="grid grid-cols-[64px_minmax(200px,1fr)_104px] md:grid-cols-[72px_minmax(260px,1fr)_200px_160px_220px_240px_120px] gap-2 px-3 py-2 items-center border-b border-[#e9eef1] last:border-b-0 hover:bg-[#f6f9fb] transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#24afff]/30"
+                                className="grid grid-cols-[64px_minmax(200px,1fr)_104px] md:grid-cols-[72px_minmax(260px,1fr)_200px_160px_220px_240px_160px] gap-2 px-3 py-2 items-center border-b border-[#e9eef1] last:border-b-0 hover:bg-[#f6f9fb] transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#24afff]/30"
                             >
                                 <div className="flex justify-center">
                                     <div className="h-12 w-12 rounded-xl bg-[#f1f6f9] flex items-center justify-center text-[#4a5b77] font-bold text-base shrink-0">
@@ -516,6 +563,17 @@ export default function ItemsPage() {
                                         title="編集"
                                     >
                                         <FaPencilAlt size={14} />
+                                    </button>
+
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            openAuditModal(item);
+                                        }}
+                                        className="h-10 w-10 rounded-xl bg-[#f1f6f9] hover:bg-[#e2e8f0] text-[#4a5b77] flex items-center justify-center transition-colors"
+                                        title="編集履歴"
+                                    >
+                                        <FaHistory size={14} />
                                     </button>
 
                                     <button
@@ -714,6 +772,16 @@ export default function ItemsPage() {
                         </div>
                     </div>
                 </>
+            )}
+
+            {auditModalOpen && auditTarget && (
+                <AuditLogModal
+                    resourceType="item"
+                    resourceId={auditTarget.id}
+                    resourceLabel={auditTarget.name}
+                    onClose={closeAuditModal}
+                    closing={auditClosing}
+                />
             )}
 
             {deleteModalOpen && (
