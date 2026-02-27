@@ -255,7 +255,11 @@ export default function ItemsPage() {
             const res = await apiFetch("/items");
             if (!res.ok) throw new Error("API error");
             const json = await res.json();
-            const data = (json.data as Item[]).map(({ last_actor: _la, ...rest }) => rest);
+            const data = (json.data as Item[]).map((item) => {
+                const copy = { ...item };
+                delete copy.last_actor;
+                return copy;
+            });
             const date = new Date().toISOString().slice(0, 10);
             downloadJson(data, `items-${date}.json`);
             toast.update(toastId, { render: "エクスポート完了", type: "success", isLoading: false, autoClose: 3000, closeButton: false, draggable: false });
