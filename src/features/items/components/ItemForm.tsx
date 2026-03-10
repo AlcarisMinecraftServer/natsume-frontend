@@ -6,6 +6,7 @@ import WeaponForm from "@/features/items/components/form/WeaponForm";
 import ArmorForm from "@/features/items/components/form/ArmorForm";
 import FoodForm from "@/features/items/components/form/FoodForm";
 import ToolForm from "@/features/items/components/form/ToolForm";
+import MaterialForm from "@/features/items/components/form/MaterialForm";
 import TagsInput from "@/features/common/TagsInput";
 
 import { defaultSchemas } from "../schemas";
@@ -501,9 +502,7 @@ export default function ItemForm({
                                                     <ToolForm data={formData.data as any} onChange={(d) => setFormData({ ...formData, data: d })} />
                                                 )}
                                                 {formData.category === "material" && (
-                                                    <div className="text-[#6f767a] py-5 text-center bg-[#f6f9fb] rounded border border-dashed border-[#cad3d8]">
-                                                        マテリアルには追加設定はありません。
-                                                    </div>
+                                                    <MaterialForm data={formData.data as any} onChange={(d) => setFormData({ ...formData, data: d })} />
                                                 )}
                                             </div>
                                         </div>

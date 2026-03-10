@@ -41,7 +41,9 @@ export const defaultSchemas = {
         durability: 300,
         enchantable: true
     },
-    material: {},
+    material: {
+        magic_materials: []
+    },
 } as const;
 
 export type SupportedCategory = keyof typeof defaultSchemas;
