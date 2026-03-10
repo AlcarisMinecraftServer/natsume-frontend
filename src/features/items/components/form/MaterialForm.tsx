@@ -21,7 +21,7 @@ export default function MaterialForm({ data, onChange }: Props) {
                 description="魔法関連の素材やエッセンスを指定します"
                 items={data.magic_materials ?? []}
                 onChange={(v) => update("magic_materials", v)}
-                placeholder="火の精霊石"
+                placeholder="red:3"
             />
         </div>
     );
