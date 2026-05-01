@@ -12,6 +12,8 @@ const ItemCreatePage = lazy(() => import('./features/items/pages/ItemCreatePage'
 const ItemEditPage = lazy(() => import('./features/items/pages/ItemEditPage'))
 const FilesPage = lazy(() => import('./features/files/pages/FilesPage'))
 const RecipesPage = lazy(() => import('./features/recipes/pages/RecipesPage'))
+const RecipeCreatePage = lazy(() => import('./features/recipes/pages/RecipeCreatePage'))
+const RecipeEditPage = lazy(() => import('./features/recipes/pages/RecipeEditPage'))
 const NotFoundPage = lazy(() => import('./features/common/pages/NotFoundPage'))
 const LoginPage = lazy(() => import('./features/auth/pages/LoginPage'))
 const AuthCallbackPage = lazy(() => import('./features/auth/pages/AuthCallbackPage'))
@@ -51,6 +53,8 @@ function App() {
               <Route path="items/edit/:id" element={<ItemEditPage />} />
               <Route path="files" element={<FilesPage />} />
               <Route path="recipes" element={<RecipesPage />} />
+              <Route path="recipes/create" element={<RecipeCreatePage />} />
+              <Route path="recipes/edit/:id" element={<RecipeEditPage />} />
               <Route path="*" element={<NotFoundPage />} />
             </Route>
           </Routes>
